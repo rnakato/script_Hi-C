@@ -1,7 +1,8 @@
 # script_Hi-C
 scripts for Hi-C analysis
 
-#### plotInsulationScore.py: plot insulation score from Juicer matrix
+#### plotInsulationScore.py
+plot insulation score from Juicer matrix
 
 Usage:
 
@@ -9,7 +10,8 @@ Usage:
                                  [--sizex SIZEX] [--sizey SIZEY]
                                  matrix output resolution
 
-#### plotMultiScaleInsulationScore.py: plot multi-scale insulation scores from Juicer matrix
+#### plotMultiScaleInsulationScore.py
+plot multi-scale insulation scores from Juicer matrix
 
 Usage:
 
