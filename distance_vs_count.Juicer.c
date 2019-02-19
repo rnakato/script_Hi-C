@@ -6,6 +6,7 @@
 #define max(a, b) ((a) > (b)) ? (a) :(b)
 
 #define WINSIZE_DEFAULT 10000
+#define MAPQTHRE_DEFAULT 30
 #define ARRAYNUM 25000
 #define STR_LEN 10000
 #define ELEM_NUM 256
@@ -25,7 +26,10 @@ int main(int argc, char *argv[])
   Elem clm[ELEM_NUM];
 
   if(argc<=1) {
-    printf("Usage: distance_vs_count.Juicer <file> <winsize>\n");
+    printf("Usage: distance_vs_count.Juicer <file> <winsize> <MAPQ>\n");
+    printf("       <file>:    Input file  (merged_nodups.txt.gz)\n");
+    printf("       <winsize>: window size (default: %d)\n", WINSIZE_DEFAULT);
+    printf("       <MAPQ>:    MAPQ threshold (default: %d)\n", MAPQTHRE_DEFAULT);
     exit(0);
   }
   
@@ -37,7 +41,11 @@ int main(int argc, char *argv[])
   if(argc>=3 && atoi(argv[2]) > 0) {
     winsize = atoi(argv[2]);
   }
-  
+  int thre_mapq = MAPQTHRE_DEFAULT;
+  if(argc>=4 && atoi(argv[3]) > 0) {
+    thre_mapq = atoi(argv[3]);
+  }
+
   char *str = (char *)my_calloc(STR_LEN, sizeof(char), "str");
   int *array = (int *)my_calloc(ARRAYNUM, sizeof(int), "array");
 
@@ -53,6 +61,27 @@ int main(int argc, char *argv[])
     }
   }
 
+  // 0 str1
+  // 1 chr1
+  // 2 pos1
+  // 3 frag1
+  // 4 str2
+  // 5 chr2
+  // 6 pos2
+  // 7 frag2
+  // 8 MAPQ1
+  // 9 CIGAR1
+  // 10 seq1
+  // 11 MAPQ2
+  // 12 CIGAR2
+  // 13 seq2
+  // 14 readname1
+  // 15 readname2
+
+  int nread=0;
+  int nread_mapq_either=0;
+  int nread_mapq_both=0;
+  
   while(1){
     char *c=NULL;
     if (zipped) c = gzgets(gzIN, str, STR_LEN);
@@ -63,13 +92,16 @@ int main(int argc, char *argv[])
     int nclm = ParseLine(str, clm);
     if(nclm < 7) continue;
     if(strcmp(clm[1].str, clm[5].str)) continue;
-    
-    //    printf("chr %s-%s\n", clm[1].str, clm[5].str);
-    //printf("sstr %s-%s\n", clm[2].str, clm[6].str);
+
+    int mapq1 = atoi(clm[8].str);
+    int mapq2 = atoi(clm[11].str);
+    nread++;
+    if(mapq1 >= thre_mapq && mapq2 >= thre_mapq) nread_mapq_both++;
+    else if(mapq1 >= thre_mapq || mapq2 >= thre_mapq) nread_mapq_either++;
+
     int start = atoi(clm[2].str);
     int end = atoi(clm[6].str);
     int length = abs(end - start);
-    //printf("%d-%d, %d\n", start, end, length);
     if(length >= winsize*ARRAYNUM) continue;
     array[length/winsize]++;
   }
@@ -78,6 +110,8 @@ int main(int argc, char *argv[])
     printf("%d - %d | %d\n", winsize*i, winsize*(i+1)-1, array[i]);
   }
 
+  printf("nread: %d, nread_either: %d, nread_both: %d\n", nread, nread_mapq_either, nread_mapq_both);
+  
   free(str);
   free(array);
   return 0;
