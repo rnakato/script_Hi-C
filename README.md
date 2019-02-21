@@ -1,8 +1,18 @@
 # script_Hi-C
 scripts for Hi-C analysis
 
+#### distance_vs_count.Juicer
+Count genomic distance of read pairs in the input file (supposing align/merged_nodups.txt.gz in Juicer output.)
+
+Usage: 
+
+      distance_vs_count.Juicer <file> <winsize> <MAPQ>
+            <file>:    Input file  (merged_nodups.txt.gz)
+            <winsize>: window size (default: 10000)
+            <MAPQ>:    MAPQ threshold (default: 30)
+
 #### plotInsulationScore.py
-plot insulation score from Juicer matrix
+Plot insulation score from Juicer matrix
 
 Usage:
 
@@ -11,7 +21,7 @@ Usage:
                                  matrix output resolution
 
 #### plotMultiScaleInsulationScore.py
-plot multi-scale insulation scores from Juicer matrix
+Plot multi-scale insulation scores from Juicer matrix
 
 Usage:
 
