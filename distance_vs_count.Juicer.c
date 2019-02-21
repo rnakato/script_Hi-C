@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
     printf("%d - %d | %d\n", winsize*i, winsize*(i+1)-1, array[i]);
   }
 
-  printf("nread: %d, nread_either: %d, nread_both: %d\n", nread, nread_mapq_either, nread_mapq_both);
+  //  printf("nread: %d, nread_either: %d, nread_both: %d\n", nread, nread_mapq_either, nread_mapq_both);
   
   free(str);
   free(array);
