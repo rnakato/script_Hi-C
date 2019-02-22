@@ -11,6 +11,15 @@ Usage:
             <winsize>: window size (default: 10000)
             <MAPQ>:    MAPQ threshold (default: 30)
 
+#### plotHiCMatrix.py
+Plot Hi-C intercation heatmap from Juicer matrix
+
+Usage:
+
+     plotHiCMatrix.py <matrix> <output name (png)> <start> <end> <title in figure>
+     Example: plotHiCMatrix.py WT/intrachromosomal/25000/observed.KR.chr7.matrix.gz chr7/WT_chr7_25000000-31000000.png 25000000 31000000 WT
+
+                                 
 #### plotInsulationScore.py
 Plot insulation score from Juicer matrix
 
