@@ -11,6 +11,14 @@ Usage:
             <winsize>: window size (default: 10000)
             <MAPQ>:    MAPQ threshold (default: 30)
 
+#### convert_JuicerDump_to_dense.py
+Convert interaction frequency file dumped by Juicer to dense matrix
+
+Usage: 
+
+      python /home/git/script_Hi-C/convert_JuicerDump_to_dense.py <inputfile> <outputfile> <genometable> <chr> <resolution> [--help]
+
+
 #### plotHiCMatrix.py
 Plot Hi-C intercation heatmap from Juicer matrix
 
