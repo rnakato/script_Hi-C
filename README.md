@@ -16,16 +16,27 @@ Convert interaction frequency file dumped by Juicer to dense matrix
 
 Usage: 
 
-      convert_JuicerDump_to_dense.py <inputfile> <outputfile> <genometable> <chr> <resolution> [--help]
+    convert_JuicerDump_to_dense.py <inputfile> <outputfile> <genometable> <chr> <resolution> [--help]
 
+Example:
+
+    convert_JuicerDump_to_dense.py \
+        Matrix.observed.VC_SQRT.chrX.txt \
+        Matrix.observed.VC_SQRT.chrX.matrix.gz \
+        genome_table.txt \
+        chrX \
+        25000
 
 #### plotHiCMatrix.py
 Plot Hi-C intercation heatmap from Juicer matrix
 
 Usage:
 
-     plotHiCMatrix.py <matrix> <output name (png)> <start> <end> <title in figure>
-     Example: plotHiCMatrix.py WT/intrachromosomal/25000/observed.KR.chr7.matrix.gz chr7/WT_chr7_25000000-31000000.png 25000000 31000000 WT
+    plotHiCMatrix.py <matrix> <output name (png)> <start> <end> <title in figure>
+
+Example: 
+
+    plotHiCMatrix.py WT/intrachromosomal/25000/observed.KR.chr7.matrix.gz chr7/WT_chr7_25000000-31000000.png 25000000 31000000 WT
 
                                  
 #### plotInsulationScore.py
