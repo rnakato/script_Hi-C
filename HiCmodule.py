@@ -39,6 +39,22 @@ def loadEigen(filename, refFlat, chr, res):
         
     return eigen
 
+# differential index
+def calcDI(mat, resolution):
+    def getDI(mat, i, len):
+        A = np.triu(mat[i-len:i, i-len:i]).sum()
+        B = np.triu(mat[i:i+len, i:i+len]).sum()
+        E = (A + B)/2
+        temp = ((A-E)**2)/E + ((B-E)**2)/E
+        DI = (B-A)/np.abs(B-A) * temp
+        return DI
+    
+    len = int(2000000 / resolution)
+    array = np.zeros(mat.shape[0])
+    for i in range(len, mat.shape[0]-len):
+        array[i] = getDI(mat, i, len)
+    return array
+
 class JuicerMatrix:
     def __init__(self, norm, rawmatrix, oematrix, eigenfile, refFlat, chr, res):
         self.res = res
@@ -49,6 +65,7 @@ class JuicerMatrix:
             self.raw = self.raw * 10000000 / np.nansum(self.raw)
             self.oe  = self.oe  * 10000000 / np.nansum(self.oe)
         self.InsulationScore = MultiInsulationScore(self.getmatrix().values, 1000000, 100000, self.res)
+        self.DI = calcDI(self.raw, self.res)
 
     def getmatrix(self, *, isOE=False, isNonZero=False):
         if isOE == False:
