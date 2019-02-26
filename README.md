@@ -16,7 +16,7 @@ Convert interaction frequency file dumped by Juicer to dense matrix
 
 Usage: 
 
-      python /home/git/script_Hi-C/convert_JuicerDump_to_dense.py <inputfile> <outputfile> <genometable> <chr> <resolution> [--help]
+      convert_JuicerDump_to_dense.py <inputfile> <outputfile> <genometable> <chr> <resolution> [--help]
 
 
 #### plotHiCMatrix.py
