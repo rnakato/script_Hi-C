@@ -45,8 +45,8 @@ def calcDI(mat, resolution):
         A = np.triu(mat[i-len:i, i-len:i]).sum()
         B = np.triu(mat[i:i+len, i:i+len]).sum()
         E = (A + B)/2
-        temp = ((A-E)**2)/E + ((B-E)**2)/E
-        DI = (B-A)/np.abs(B-A) * temp
+        temp = np.nan_to_num(((A-E)**2)/E) + np.nan_to_num(((B-E)**2)/E)
+        DI = np.nan_to_num((B-A)/np.abs(B-A)) * temp
         return DI
     
     len = int(2000000 / resolution)
@@ -65,7 +65,7 @@ class JuicerMatrix:
             self.raw = self.raw * 10000000 / np.nansum(self.raw)
             self.oe  = self.oe  * 10000000 / np.nansum(self.oe)
         self.InsulationScore = MultiInsulationScore(self.getmatrix().values, 1000000, 100000, self.res)
-        self.DI = calcDI(self.raw, self.res)
+        self.DI = calcDI(self.raw.values, self.res)
 
     def getmatrix(self, *, isOE=False, isNonZero=False):
         if isOE == False:
