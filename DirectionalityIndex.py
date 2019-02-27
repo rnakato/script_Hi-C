@@ -6,7 +6,7 @@ import pandas as pd
 import argparse
 from loadData import loadJuicerMatrix
 
-def calcDI(mat, resolution):
+def calcDI(mat, resolution, *, distance=1000000):
     def getDI(mat, i, len):
         A = np.triu(mat[i-len:i, i-len:i]).sum()
         B = np.triu(mat[i:i+len, i:i+len]).sum()
@@ -15,13 +15,13 @@ def calcDI(mat, resolution):
         DI = np.nan_to_num((B-A)/np.abs(B-A)) * temp
         return DI
     
-    len = int(2000000 / resolution)
+    len = int(distance / resolution)
     array = np.zeros(mat.shape[0])
     for i in range(len, mat.shape[0]-len):
         array[i] = getDI(mat, i, len)
     return array
 
-def getDifferentialIndexOfMultiSample(samples, labels):
+def getDirectionalityIndexOfMultiSample(samples, labels):
     for i, sample in enumerate(samples):
         if i==0: Matrix = sample.DI
         else:    Matrix = np.vstack((Matrix,sample.DI)) 
