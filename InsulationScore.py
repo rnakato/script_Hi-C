@@ -63,6 +63,24 @@ def getTADboundary(array, resolution):
             boundary.append(i)
     return boundary
 
+def getInsulationScoreOfMultiSample(samples, labels, *, distance=500000):
+    for i, sample in enumerate(samples):
+        if i==0: Matrix = sample.getInsulationScore(distance=distance)
+        else:    Matrix = pd.concat([Matrix, sample.getInsulationScore(distance=distance)], axis=1)
+    Matrix = Matrix.replace(-np.inf,np.nan).fillna(0)
+    Matrix.columns = labels
+    return Matrix
+
+def getDiffInsulationScoreOfMultiSample(samples, labels, *, distance=500000):
+    for i, sample in enumerate(samples):
+        df = sample.getInsulationScore(distance=distance) - samples[0].getInsulationScore(distance=distance)
+        if i==0: pass
+        elif i==1: DMat = df
+        else:      DMat = pd.concat([DMat, df], axis=1)
+    DMat = DMat.replace(-np.inf,np.nan).fillna(0)
+    DMat.columns = labels
+    return DMat
+
 if(__name__ == '__main__'):
     parser = argparse.ArgumentParser()
     parser.add_argument("matrix", help="Input matrix", type=str)

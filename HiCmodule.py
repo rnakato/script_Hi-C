@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn import linear_model
 from InsulationScore import *
+from DirectionalityIndex import *
 from loadData import loadJuicerMatrix
 from generateCmap import generate_cmap
 
@@ -38,22 +39,6 @@ def loadEigen(filename, refFlat, chr, res):
         eigen = -eigen
         
     return eigen
-
-# differential index
-def calcDI(mat, resolution):
-    def getDI(mat, i, len):
-        A = np.triu(mat[i-len:i, i-len:i]).sum()
-        B = np.triu(mat[i:i+len, i:i+len]).sum()
-        E = (A + B)/2
-        temp = np.nan_to_num(((A-E)**2)/E) + np.nan_to_num(((B-E)**2)/E)
-        DI = np.nan_to_num((B-A)/np.abs(B-A)) * temp
-        return DI
-    
-    len = int(2000000 / resolution)
-    array = np.zeros(mat.shape[0])
-    for i in range(len, mat.shape[0]-len):
-        array[i] = getDI(mat, i, len)
-    return array
 
 class JuicerMatrix:
     def __init__(self, norm, rawmatrix, oematrix, eigenfile, refFlat, chr, res):
