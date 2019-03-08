@@ -21,6 +21,15 @@ def calcDI(mat, resolution, *, distance=1000000):
         array[i] = getDI(mat, i, len)
     return array
 
+def getDirectionalityIndexOfMultiSample(samples, labels, *, distance=1000000):
+    for i, sample in enumerate(samples):
+        if i==0: Matrix = sample.getDirectionalityIndex(distance=distance)
+        else:    Matrix = np.vstack((Matrix,sample.getDirectionalityIndex(distance=distance))) 
+    Matrix = pd.DataFrame(Matrix)
+    Matrix = Matrix.replace(-np.inf,np.nan).fillna(0)
+    Matrix.index = labels
+    return Matrix
+
 def getDirectionalityIndexOfMultiSample(samples, labels):
     for i, sample in enumerate(samples):
         if i==0: Matrix = sample.DI
