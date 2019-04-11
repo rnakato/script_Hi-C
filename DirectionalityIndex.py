@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import argparse
 from loadData import loadJuicerMatrix
+from InsulationScore import MultiInsulationScore
 
 def calcDI(mat, resolution, *, distance=1000000):
     def getDI(mat, i, len):
