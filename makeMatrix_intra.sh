@@ -38,11 +38,10 @@ else
     chrnum=22
 fi
 
-juicertool="java -Xms512m -Xmx2048m -jar /home/git/binaries/Aidenlab/juicer_tools.1.8.9_jcuda.0.8.jar"
+pwd=$(cd $(dirname $0) && pwd)
+juicertool="java -Xms512m -Xmx2048m -jar $pwd/../binaries/Aidenlab/juicer_tools.1.8.9_jcuda.0.8.jar"
 dir=$matrixdir/intrachromosomal/$binsize
 mkdir -p $dir
-
-pwd=$(cd $(dirname $0) && pwd)
 
 for chr in $(seq 1 $chrnum) X; do
     echo $chr
@@ -54,7 +53,7 @@ for chr in $(seq 1 $chrnum) X; do
     done
     for type in #expected norm
     do
-        $juicertool dump $type #$norm $hic.hic $chr BP $binsize $dir/$type.$norm.chr$chr.matrix -d
+        $juicertool dump $type $norm $hic.hic $chr BP $binsize $dir/$type.$norm.chr$chr.matrix -d
     done
 done
 

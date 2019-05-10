@@ -39,8 +39,8 @@ else
     chrnum=22
 fi
 
-juicertool="java -Xms512m -Xmx2048m -jar /home/git/binaries/Aidenlab/juicer_tools.1.8.9_jcuda.0.8.jar"
 pwd=$(cd $(dirname $0) && pwd)
+juicertool="java -Xms512m -Xmx2048m -jar $pwd/../binaries/Aidenlab/juicer_tools.1.8.9_jcuda.0.8.jar"
 
 for i in $(seq 1 $chrnum)
 do
