@@ -43,9 +43,10 @@ juicertool="java -Xms512m -Xmx2048m -jar $pwd/../binaries/Aidenlab/juicer_tools.
 dir=$matrixdir/intrachromosomal/$binsize
 mkdir -p $dir
 
-for chr in $(seq 1 $chrnum) X; do
-    echo $chr
-    for type in observed oe
+for chr in $(seq 1 $chrnum) X
+do
+    echo "chr$chr"
+    for type in observed #oe
     do
         $juicertool dump $type $norm $hic $chr $chr BP $binsize $dir/$type.$norm.chr$chr.txt
         $pwd/convert_JuicerDump_to_dense.py $dir/$type.$norm.chr$chr.txt $dir/$type.$norm.chr$chr.matrix.gz $gt chr$chr $binsize
