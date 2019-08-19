@@ -30,7 +30,7 @@ hic=$2
 binsize=$3
 build=$4
 
-gt=/home/Database/UCSC/$build/genome_table
+gt=/work/Database/UCSC/$build/genome_table
 
 if test $build = "mm10" -o $build = "mm9"; then
     chrnum=19
@@ -57,5 +57,3 @@ do
         $juicertool dump $type $norm $hic.hic $chr BP $binsize $dir/$type.$norm.chr$chr.matrix -d
     done
 done
-
-
