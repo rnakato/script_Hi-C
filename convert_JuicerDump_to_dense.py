@@ -1,9 +1,8 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import numpy as np
 import pandas as pd
 import sys
-
 
 def parse_argv():
     usage = 'Usage: \n    python {} <inputfile> <outputfile> <genometable> <chr> <resolution> [--help]'.format(__file__)
@@ -21,8 +20,8 @@ def parse_argv():
 
     return arguments
 
-def getfilename(i, j):
-    return dir + "/" + str(res) + "/chr" + str(i) + "-chr" + str(j) + "/" + ntype + ".matrix.gz"
+#def getfilename(i, j):
+#    return dir + "/" + str(res) + "/chr" + str(i) + "-chr" + str(j) + "/" + ntype + ".matrix.gz"
 
 if __name__ == '__main__':
     arguments = parse_argv()
@@ -31,13 +30,15 @@ if __name__ == '__main__':
     gtfile = arguments[2]
     chr = arguments[3]
     resolution = int(arguments[4])
-    
+
     genometable = pd.read_csv(gtfile, delimiter='\t', index_col=[0], header=None)
     chrlen = genometable.loc[chr]
     binlen = int(chrlen/resolution) +1
 
     arr = np.zeros((binlen, binlen))
-    d = pd.read_csv(inputfile, delimiter='\t', header=None, index_col=[0,1])
+    #    d = pd.read_csv(inputfile, delimiter='\t', header=None, index_col=[0,1])
+    d = pd.read_csv(inputfile, delimiter='\t', header=None)
+    d = d.set_index([0,1])
     d = d.iloc[:,0]
     d = d.unstack(fill_value=0)
     index = np.arange(binlen) * resolution

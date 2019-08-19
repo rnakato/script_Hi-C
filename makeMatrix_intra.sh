@@ -49,7 +49,12 @@ do
     for type in observed #oe
     do
         $juicertool dump $type $norm $hic $chr $chr BP $binsize $dir/$type.$norm.chr$chr.txt
-        $pwd/convert_JuicerDump_to_dense.py $dir/$type.$norm.chr$chr.txt $dir/$type.$norm.chr$chr.matrix.gz $gt chr$chr $binsize
+        $pwd/convert_JuicerDump_to_dense.py \
+	    $dir/$type.$norm.chr$chr.txt \
+	    $dir/$type.$norm.chr$chr.matrix.gz \
+	    $gt \
+	    chr$chr \
+	    $binsize
         rm $dir/$type.$norm.chr$chr.txt
     done
     for type in #expected norm
