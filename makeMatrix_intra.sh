@@ -26,7 +26,7 @@ fi
 
 pwd=$(cd $(dirname $0) && pwd)
 juicertool="java -Xms512m -Xmx2048m -jar $pwd/../binaries/Aidenlab/juicer_tools.1.8.9_jcuda.0.8.jar"
-dir=$matrixdir/intrachromosomal/$binsize
+dir=$matrixdir/Matrix/intrachromosomal/$binsize
 mkdir -p $dir
 
 for chr in $(seq 1 $chrnum) X
