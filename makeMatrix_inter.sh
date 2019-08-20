@@ -2,36 +2,22 @@
 cmdname=`basename $0`
 function usage()
 {
-    echo "$cmdname <matrixdir> <hic file> <binsize> <build> <lim_pzero>" 1>&2
+    echo "$cmdname <norm> <matrixdir> <hic file> <binsize> <build> <lim_pzero>" 1>&2
 }
-
-all=0
-while getopts a option
-do
-    case ${option} in
-        a)
-            all=1
-            ;;
-        *)
-            usage
-            exit 1
-            ;;
-    esac
-done
-shift $((OPTIND - 1))
 
 if [ $# -ne 5 ]; then
   usage
   exit 1
 fi
 
-dir=$1
-hic=$2
-binsize=$3
-build=$4
-lim_pzero=$5
+norm=$1
+dir=$2
+hic=$3
+binsize=$4
+build=$5
+lim_pzero=$6
 
-gt=/home/Database/UCSC/$build/genome_table
+gt=$(../script_rnakato/database.sh)/UCSC/$build/genome_table
 
 if test $build = "mm10" -o $build = "mm9"; then
     chrnum=19

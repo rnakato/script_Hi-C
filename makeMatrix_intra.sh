@@ -16,7 +16,7 @@ hic=$3
 binsize=$4
 build=$5
 
-gt=/work/Database/UCSC/$build/genome_table
+gt=$(../script_rnakato/database.sh)/UCSC/$build/genome_table
 
 if test $build = "mm10" -o $build = "mm9"; then
     chrnum=19
