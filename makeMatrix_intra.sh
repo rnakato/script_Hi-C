@@ -2,33 +2,19 @@
 cmdname=`basename $0`
 function usage()
 {
-    echo "$cmdname <matrixdir> <hic file> <binsize> <build>" 1>&2
+    echo "$cmdname <norm> <matrixdir> <hic file> <binsize> <build>" 1>&2
 }
 
-norm=VC_SQRT
-while getopts k option
-do
-    case ${option} in
-        k)
-            norm=KR
-            ;;
-        *)
-            usage
-            exit 1
-            ;;
-    esac
-done
-shift $((OPTIND - 1))
-
-if [ $# -ne 4 ]; then
+if [ $# -ne 5 ]; then
   usage
   exit 1
 fi
 
-matrixdir=$1
-hic=$2
-binsize=$3
-build=$4
+norm=$1
+matrixdir=$2
+hic=$3
+binsize=$4
+build=$5
 
 gt=/work/Database/UCSC/$build/genome_table
 
@@ -57,8 +43,8 @@ do
 	    $binsize
         rm $dir/$type.$norm.chr$chr.txt
     done
-    for type in #expected norm
-    do
-        $juicertool dump $type $norm $hic.hic $chr BP $binsize $dir/$type.$norm.chr$chr.matrix -d
-    done
+#    for type in expected norm
+#    do
+#        $juicertool dump $type $norm $hic.hic $chr BP $binsize $dir/$type.$norm.chr$chr.matrix -d
+#    done
 done
