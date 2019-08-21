@@ -57,3 +57,23 @@ Usage:
                                            [--sizex SIZEX] [--sizey SIZEY]
                                            matrix output resolution
 
+#### makeMatrix_intra.sh
+Generate dense matrix from .hic for each chromosome
+
+Usage:
+
+     makeMatrix_intra.sh <normalize type (e.g. KR)> <output directory> <.hic> <resolution> <build (r.g., hg38)>
+
+#### makeEigen.sh
+Generate eigenvector file in that +- of the value is adjusted by the number of genes
+
+Usage:
+
+     makeEigen.sh <normalize type (e.g. KR)> <output directory> <.hic> <resolution> <build (r.g., hg38)>
+
+#### makeInslationScore.sh
+Calculate insulation score file from dense matrix data
+
+Usage:
+
+     makeInslationScore.sh <normalize type (e.g. KR)> <output directory> <resolution> <build (r.g., hg38)>
