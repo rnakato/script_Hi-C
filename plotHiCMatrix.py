@@ -1,5 +1,5 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*- 
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import sys
 import numpy as np
@@ -13,6 +13,12 @@ sys.path.append("/home/git/script_rnakato/Hi-C")
 from HiCmodule import *
 cm = generate_cmap(['#FFFFFF', '#d10a3f'])
 
+usage = 'Usage: \n    python {} <matrixdir> <output prefix> <start> <end> <label>'.format(__file__)
+arguments = sys.argv
+if len(arguments) == 1:
+    print(usage)
+    exit()
+
 filename = sys.argv[1]
 output = sys.argv[2]
 start = int(sys.argv[3])
@@ -20,7 +26,7 @@ end = int(sys.argv[4])
 label = sys.argv[5]
 
 data = pd.read_csv(filename, delimiter='\t', index_col=0)
-resolution = data.index[1] - data.index[0] 
+resolution = data.index[1] - data.index[0]
 
 s = int(start / resolution)
 e = int(end / resolution)

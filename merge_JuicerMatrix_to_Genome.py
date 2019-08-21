@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import numpy as np
 import pandas as pd
 import sys
@@ -29,7 +29,7 @@ def getchrlen(nchr):
         d = pd.read_csv(getfilename(1, i), delimiter='\t', header=None)
         del d[d.shape[1]-1]
         chrlen.append(d.shape[1])
-    
+
     #print(chrlen)
     #print(np.sum(chrlen))
 
@@ -72,20 +72,20 @@ if __name__ == '__main__':
         include_intra_read = True
 
     chrlen = getchrlen(nchr)
-    
+
     if '--evenodd' in arguments:
         for i in range(1,nchr+1,2):
             #            print('i={0} j=2'.format(i))
             matrix = getmatrix(i, 2, chrlen, include_intra_read)
             for j in range(4,nchr+1,2):
  #               print('i={0} j={1}'.format(i,j))
-                mat = getmatrix(i, j, chrlen, include_intra_read) 
+                mat = getmatrix(i, j, chrlen, include_intra_read)
                 matrix = pd.concat([matrix, mat], axis=1)
             if i==1:
                 A = matrix
             else:
                 A = pd.concat([A, matrix])
-        
+
         print("before trim: ")
         print(A.shape)
 
@@ -99,12 +99,12 @@ if __name__ == '__main__':
 
         print("after trim: ")
         print(A.shape)
-                
+
     else:
         for i in range(1,nchr+1):
             matrix = getmatrix(i, 1, chrlen, include_intra_read)
             for j in range(2,nchr+1):
-                mat = getmatrix(i, j, chrlen, include_intra_read) 
+                mat = getmatrix(i, j, chrlen, include_intra_read)
                 matrix = pd.concat([matrix, mat], axis=1)
             if i==1:
                 A = matrix
@@ -113,5 +113,5 @@ if __name__ == '__main__':
 
         print("matrix size: ")
         print(A.shape)
-        
+
     A.to_pickle(outputfile)
