@@ -34,9 +34,9 @@ do
     matrix=$matrixdir/Matrix/intrachromosomal/$binsize/observed.$norm.chr$i.matrix.gz
 
     if test -s $matrix; then
-	InsulationScore.py               $matrix $dir/chr$i chr$i $resolution
-	plotInsulationScore.py           $matrix $dir/chr$i       $resolution
-	plotMultiScaleInsulationScore.py $matrix $dir/chr$i       $resolution
+	ex "InsulationScore.py               $matrix $dir/chr$i chr$i $binsize"
+	ex "plotInsulationScore.py           $matrix $dir/chr$i       $binsize"
+	ex "plotMultiScaleInsulationScore.py $matrix $dir/chr$i       $binsize"
     else
 	echo "Warning: $matrix does not exist."
     fi

@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 
 import numpy as np
 import pandas as pd
@@ -15,18 +15,18 @@ def calceach(mat, squaresize, resolution):
     for i in range(mat.shape[0]):
         if(i - matsize < 0 or i + matsize >= mat.shape[0]): continue
         array[i] = mat[i-matsize: i-1, i+1: i+matsize].mean()
-        
+
     array = np.log2(array/np.nanmean(array))
     return array
 
 def calcInsulationScore(mat, max_sqsize, step, resolution):
     imax = int(max_sqsize/step)
     for i in range(imax, 0, -1):
-        if i==imax: 
+        if i==imax:
             InsulationScore = calceach(mat, i * step, resolution)
-        else: 
+        else:
             InsulationScore = np.c_[InsulationScore, calceach(mat, i * step, resolution)]
-            
+
     InsulationScore = InsulationScore.T
     df = pd.DataFrame(InsulationScore)
     df.index = np.arange(imax, 0, -1) * step
@@ -37,16 +37,16 @@ class MultiInsulationScore:
     def __init__(self, mat, max_sqsize, step, resolution):
         imax = int(max_sqsize/step)
         for i in range(imax, 0, -1):
-            if i==imax: 
+            if i==imax:
                 InsulationScore = calceach(mat, i * step, resolution)
-            else: 
+            else:
                 InsulationScore = np.c_[InsulationScore, calceach(mat, i * step, resolution)]
-                
+
         InsulationScore = InsulationScore.T
         self.MI = pd.DataFrame(InsulationScore)
         self.MI.index = np.arange(imax, 0, -1) * step
         self.MI.columns = self.MI.columns * resolution
-                
+
     def getInsulationScore(self, *, distance=500000):
         i = np.where(self.MI.index == distance)[0][0]
         return self.MI.iloc[i:i+1].T
@@ -56,7 +56,7 @@ def getTADboundary(array, resolution):
     slop = np.zeros(array.shape[0])
     for i in range(distance, array.shape[0] - distance):
         slop[i] = array[i - distance] - array[i + distance]
-        
+
     boundary = []
     for i in range(1, len(slop)):
         if(slop[i-1] > 0 and slop[i] < 0 and array[i] <= -0.1):
@@ -91,7 +91,7 @@ if(__name__ == '__main__'):
     parser.add_argument("--distance", help="Distance of Insulation Score (default: 500000)", type=int, default=500000)
 
     args = parser.parse_args()
-    print(args)
+#    print(args)
 
     matrix = loadJuicerMatrix(args.matrix)
     matrix = matrix * args.num4norm / np.nansum(matrix)

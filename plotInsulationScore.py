@@ -15,7 +15,7 @@ if(__name__ == '__main__'):
     parser.add_argument("--sizey", help="Size of y axis (default: 2)", type=int, default=2)
 
     args = parser.parse_args()
-    print(args)
+#    print(args)
 
     matrix = loadJuicerMatrix(args.matrix)
     matrix = matrix * args.num4norm / np.nansum(matrix)
