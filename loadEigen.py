@@ -1,20 +1,44 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import argparse
+import numpy as np
+import pandas as pd
+from scipy.stats import pearsonr
+
 def loadEigen(filename, refFlat, chr, res):
-   print(filename)
    eigen = np.loadtxt(filename)
-   gene = pd.read_csv(refFlat, delimiter='\t', header=None, index_col=0)
-   gene = gene[gene.iloc[:,1] == chr]
-   gene = gene.iloc[:,5].values
+   gene = pd.read_csv(refFlat, delimiter='\t', header=None, usecols=[2,3,4,5]) # , index_col=0
+#   print(gene.iloc[1,:])
+ #  print(gene.iloc[1,0])
+ #  print(gene.iloc[1,1])
+#   print(gene.iloc[1,2])
+ #  print(gene.iloc[1,3])
+   gene = gene[gene.iloc[:,0] == chr]
+   gene = gene.iloc[:,2].values
    genenum = np.zeros(len(eigen), int)
    for row in gene:
-       if int(row/res)>= len(eigen): continue
-       genenum[int(row/res)] += 1
-   from scipy.stats import pearsonr
+      row = int(row)
+      if int(row/res)>= len(eigen): continue
+      genenum[int(row/res)] += 1
    if pearsonr(genenum[~np.isnan(eigen)], eigen[~np.isnan(eigen)])[0] < 0:
-       eigen = -eigen
+      eigen = -eigen
 
    return eigen
-このように関数を定義して、
-eigen = loadEigen("/media/DATAPART3/Hi-C/Sakata/RPE/Juicer/2017_009A_R_Ct/matrix/intrachromosomal/50000/eigen.KR.chr21.txt.gz",
-        "/home/Database/UCSC/hg19/refFlat.dupremoved.txt",
-        "chr21",
-        50000)
+
+if(__name__ == '__main__'):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("input",  help="Eigen data",    type=str)
+    parser.add_argument("output", help="Output prefix", type=str)
+    parser.add_argument("gene",   help="refFlat file",  type=str)
+    parser.add_argument("chr",    help="chromosome",    type=str)
+    parser.add_argument("resolution", help="resolution", type=int)
+
+    args = parser.parse_args()
+#    print(args)
+
+    eigen = loadEigen(args.input,
+                      args.gene,
+                      args.chr,
+                      args.resolution)
+    np.savetxt(args.output, eigen, fmt="%0.6f")

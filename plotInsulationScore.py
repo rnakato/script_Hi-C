@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 
 import argparse
 from InsulationScore import *
@@ -16,7 +16,7 @@ if(__name__ == '__main__'):
 
     args = parser.parse_args()
     print(args)
-    
+
     matrix = loadJuicerMatrix(args.matrix)
     matrix = matrix * args.num4norm / np.nansum(matrix)
 
@@ -31,6 +31,6 @@ if(__name__ == '__main__'):
     boundary = getTADboundary(df.values, args.resolution)
     for x in boundary:
         plt.axvline(x, color="orange")
-    
+
     ax.set_ylim([-2, 2])
     plt.savefig(args.output + ".InsulationScore.png")

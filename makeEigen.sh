@@ -38,6 +38,12 @@ do
 	gzip -f $dir/pearson.$norm.chr$chr.matrix
     fi
     if test -s $dir/eigen.$norm.chr$chr.txt; then
+	$pwd/loadEigen.py $dir/eigen.$norm.chr$chr.txt \
+			  $dir/eigen.$norm.chr$chr.txt.temp \
+			  $($pwd/../script_rnakato/database.sh)/UCSC/$build/refFlat.txt \
+			  chr$chr \
+			  $binsize
+	mv $dir/eigen.$norm.chr$chr.txt.temp $dir/eigen.$norm.chr$chr.txt
 	gzip -f $dir/eigen.$norm.chr$chr.txt
     fi
 done
