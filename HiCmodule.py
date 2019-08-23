@@ -78,7 +78,7 @@ class JuicerMatrix:
         return self.InsulationScore.getInsulationScore(distance=distance)
 
     def getMultiInsulationScore(self):
-        return self.InsulationScore
+        return self.InsulationScore.getMultiInsulationScore()
 
     def getDirectionalityIndex(self, *, distance=1000000):
         return calcDI(self.raw.values, self.res, distance=distance)

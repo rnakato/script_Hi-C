@@ -23,6 +23,7 @@ if(__name__ == '__main__'):
     parser.add_argument("-e", "--end", help="end bp", type=int, default=1000000)
     parser.add_argument("-x", "--sizex", help="Size of x axis (default: 30)", type=int, default=30)
     parser.add_argument("-y", "--sizey", help="Size of y axis (default: 2)", type=int, default=2)
+    parser.add_argument("--multi", help="plot MultiInsulation Score", action='store_true')
 
     args = parser.parse_args()
 #    print(args)
@@ -59,14 +60,32 @@ if(__name__ == '__main__'):
         samples.append(JuicerMatrix("RPM", observed, oe, eigen, resolution))
         print ("\n")
 
-    Matrix = getInsulationScoreOfMultiSample(samples, labels)
+    ### Plot
+    if (args.multi):
+        plt.figure(figsize=(10, 8))
 
-#    pdb.set_trace()
+        for i, sample in enumerate(samples):
+            plt.subplot2grid((len(samples), 4), (i, 0), rowspan=1, colspan=4)
+            plt.imshow(sample.getMultiInsulationScore(),
+#                       clim=(-0.5, 1),
+                       cmap=generate_cmap(['#d10a3f', '#FFFFFF', '#1310cc']),
+                       aspect="auto")
+            plt.title(labels[i])
+#            plt.yticks([2], (labels[i]))
 
-    plt.figure(figsize=(11,2))
-    plt.imshow(Matrix.T.iloc[:,s:e], cmap=generate_cmap(['#d10a3f', '#FFFFFF', '#1310cc']), aspect="auto")
-    plt.colorbar()
-    pltxticks(0, e-s, figstart, figend, 20)
-    plt.yticks(np.arange(len(labels)), labels)
+            plt.xlim([s,e])
+            pltxticks(s, e, figstart, figend, 10)
+            plt.colorbar()
+        plt.tight_layout()
+    else:
+        Matrix = getInsulationScoreOfMultiSample(samples, labels)
+        plt.figure(figsize=(11,2))
+        plt.imshow(Matrix.T.iloc[:,s:e],
+ #                  clim=(-0.5, 1),
+                   cmap=generate_cmap(['#d10a3f', '#FFFFFF', '#1310cc']),
+                   aspect="auto")
+        plt.colorbar()
+        pltxticks(0, e-s, figstart, figend, 20)
+        plt.yticks(np.arange(len(labels)), labels)
 
     plt.savefig(args.output + ".png")
