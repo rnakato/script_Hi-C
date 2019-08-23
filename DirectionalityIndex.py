@@ -4,7 +4,7 @@
 import numpy as np
 import pandas as pd
 import argparse
-from loadData import loadJuicerMatrix
+from loadData import loadDenseMatrix
 from InsulationScore import MultiInsulationScore
 
 def calcDI(mat, resolution, *, distance=1000000):
@@ -52,7 +52,7 @@ if(__name__ == '__main__'):
     args = parser.parse_args()
     print(args)
 
-    matrix = loadJuicerMatrix(args.matrix)
+    matrix = loadDenseMatrix(args.matrix)
     matrix = matrix * args.num4norm / np.nansum(matrix)
 
     MI = MultiInsulationScore(matrix.values, 1000000, 100000, args.resolution)

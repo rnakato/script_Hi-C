@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
-from loadData import loadJuicerMatrix
+from loadData import loadDenseMatrix
 from generateCmap import generate_cmap
 #import pdb; pdb.set_trace()
 
@@ -16,7 +16,7 @@ def calceach(mat, squaresize, resolution):
         if(i - matsize < 0 or i + matsize >= mat.shape[0]): continue
         array[i] = mat[i-matsize: i-1, i+1: i+matsize].mean()
 
-    array = np.log2(array/np.nanmean(array))
+    array = np.log1p(array/np.nanmean(array))
     return array
 
 def calcInsulationScore(mat, max_sqsize, step, resolution):
@@ -93,7 +93,7 @@ if(__name__ == '__main__'):
     args = parser.parse_args()
 #    print(args)
 
-    matrix = loadJuicerMatrix(args.matrix)
+    matrix = loadDenseMatrix(args.matrix)
     matrix = matrix * args.num4norm / np.nansum(matrix)
 
     MI = MultiInsulationScore(matrix.values, 1000000, 100000, args.resolution)

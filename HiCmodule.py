@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn import linear_model
 from InsulationScore import *
 from DirectionalityIndex import *
-from loadData import loadJuicerMatrix
+from loadData import loadDenseMatrix
 from generateCmap import generate_cmap
 
 def getNonZeroMatrix(A, lim_pzero):
@@ -20,32 +20,12 @@ def getNonZeroMatrix(A, lim_pzero):
 
     return A
 
-def loadEigen(filename, refFlat, chr, res):
-    print(filename)
-    if filename == "": return
-    
-    eigen = np.loadtxt(filename)
-    gene = pd.read_csv(refFlat, delimiter='\t', header=None, index_col=0)
-    gene = gene[gene.iloc[:,1] == chr]
-    gene = gene.iloc[:,5].values
-
-    genenum = np.zeros(len(eigen), int)
-    for row in gene:
-        if int(row/res)>= len(eigen): continue
-        genenum[int(row/res)] += 1
-
-    from scipy.stats import pearsonr
-    if pearsonr(genenum[~np.isnan(eigen)], eigen[~np.isnan(eigen)])[0] < 0:
-        eigen = -eigen
-        
-    return eigen
-
 class JuicerMatrix:
-    def __init__(self, norm, rawmatrix, oematrix, eigenfile, refFlat, chr, res):
+    def __init__(self, norm, rawmatrix, oematrix, eigenfile, res):
         self.res = res
-        self.raw = loadJuicerMatrix(rawmatrix)
-        self.oe  = loadJuicerMatrix(oematrix)
-        self.eigen = loadEigen(eigenfile, refFlat, chr, res)
+        self.raw = loadDenseMatrix(rawmatrix)
+        self.oe  = loadDenseMatrix(oematrix)
+        self.eigen = np.loadtxt(eigenfile)
         if norm == "RPM":
             self.raw = self.raw * 10000000 / np.nansum(self.raw)
             self.oe  = self.oe  * 10000000 / np.nansum(self.oe)
@@ -62,7 +42,7 @@ class JuicerMatrix:
                 return getNonZeroMatrix(self.oe, 0)
             else:
                 return self.oe
-        
+
     def getlog(self, *, isOE=False, isNonZero=False):
         mat = self.getmatrix(isOE=isOE, isNonZero=isNonZero)
         logmat = mat.apply(np.log1p)
@@ -82,16 +62,17 @@ class JuicerMatrix:
         ccmat[np.isnan(ccmat)] = 0
         ccmat = pd.DataFrame(ccmat, index=oe.index, columns=oe.index)
         return ccmat
-    
+
     def getEigen(self):
-        from sklearn.decomposition import PCA
-        pca = PCA()
-        ccmat = self.getPearson()
+        return self.eigen
+#        from sklearn.decomposition import PCA
+#        pca = PCA()
+#        ccmat = self.getPearson()
 #        index = np.isnan(ccmat).all(axis=1)
-        transformed = pca.fit_transform(ccmat)
-        pc1 = transformed[:, 0]
+#        transformed = pca.fit_transform(ccmat)
+#        pc1 = transformed[:, 0]
 #        pc1[index] = np.nan
-        return transformed[:, 0]
+#        return transformed[:, 0]
 
     def getInsulationScore(self, *, distance=500000):
         return self.InsulationScore.getInsulationScore(distance=distance)
@@ -107,7 +88,7 @@ def ExtractMatrix(mat,s,e):
         return mat.values[s:,s:]
     else:
         return mat.values[s:e,s:e]
-    
+
 def ExtractMatrixIndex(mat,index1,index2):
     mat = mat[index1,:]
     mat = mat[:,index2]

@@ -16,7 +16,7 @@ if(__name__ == '__main__'):
     args = parser.parse_args()
 #    print(args)
 
-    matrix = loadJuicerMatrix(args.matrix)
+    matrix = loadDenseMatrix(args.matrix)
     matrix = matrix * args.num4norm / np.nansum(matrix)
 
     MI = MultiInsulationScore(matrix.values, 1000000, 100000, args.resolution)
