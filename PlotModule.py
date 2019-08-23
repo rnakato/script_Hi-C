@@ -9,6 +9,7 @@ def pltxticks(start, end, figstart, figend, nmem):
     val = (figend - figstart) / nmem
     xval = (figstart + np.arange(nmem+1)*val)/Mega
     plt.xticks(x, xval)
+
 def axxticks(ax, start, end, figstart, figend, nmem):
     mem = int((end - start)/nmem)
     x = start + np.arange(nmem+1) * mem
