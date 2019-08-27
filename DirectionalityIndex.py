@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 
 import numpy as np
 import pandas as pd
@@ -9,36 +9,40 @@ from InsulationScore import MultiInsulationScore
 
 def calcDI(mat, resolution, *, distance=1000000):
     def getDI(mat, i, len):
-        A = np.triu(mat[i-len:i, i-len:i]).sum()
-        B = np.triu(mat[i:i+len, i:i+len]).sum()
-        E = (A + B)/2
-        temp = np.nan_to_num(((A-E)**2)/E) + np.nan_to_num(((B-E)**2)/E)
-        DI = np.nan_to_num((B-A)/np.abs(B-A)) * temp
+        A = round(np.triu(mat[i-len:i, i-len:i]).sum(), 6)
+        B = round(np.triu(mat[i:i+len, i:i+len]).sum(), 6)
+        E = round((A + B)/2, 6)
+#        print (A, B, E, A-E, B-E, (A-E)**2, (A-E)**2/E)
+#        DI = ((A-E)**2 + (B-E)**2) /E
+        DI = ((A-E)**2)*2 /E
+        if A > B:
+            DI = -DI
         return DI
-    
+
     len = int(distance / resolution)
     array = np.zeros(mat.shape[0])
-    for i in range(len, mat.shape[0]-len):
-        array[i] = getDI(mat, i, len)
+    mat2 = np.nan_to_num(mat)
+    for i in range(len, mat2.shape[0]-len):
+        array[i] = getDI(mat2, i, len)
     return array
 
 def getDirectionalityIndexOfMultiSample(samples, labels, *, distance=1000000):
     for i, sample in enumerate(samples):
         if i==0: Matrix = sample.getDirectionalityIndex(distance=distance)
-        else:    Matrix = np.vstack((Matrix,sample.getDirectionalityIndex(distance=distance))) 
+        else:    Matrix = np.vstack((Matrix,sample.getDirectionalityIndex(distance=distance)))
     Matrix = pd.DataFrame(Matrix)
     Matrix = Matrix.replace(-np.inf,np.nan).fillna(0)
     Matrix.index = labels
     return Matrix
 
-def getDirectionalityIndexOfMultiSample(samples, labels):
-    for i, sample in enumerate(samples):
-        if i==0: Matrix = sample.DI
-        else:    Matrix = np.vstack((Matrix,sample.DI)) 
-    Matrix = pd.DataFrame(Matrix)
-    Matrix = Matrix.replace(-np.inf,np.nan).fillna(0)
-    Matrix.index = labels
-    return Matrix
+#def getDirectionalityIndexOfMultiSample(samples, labels):
+#    for i, sample in enumerate(samples):
+#        if i==0: Matrix = sample.DI
+#        else:    Matrix = np.vstack((Matrix,sample.DI))
+#    Matrix = pd.DataFrame(Matrix)
+#    Matrix = Matrix.replace(-np.inf,np.nan).fillna(0)
+#    Matrix.index = labels
+#    return Matrix
 
 if(__name__ == '__main__'):
     parser = argparse.ArgumentParser()

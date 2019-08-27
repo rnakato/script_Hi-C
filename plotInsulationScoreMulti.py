@@ -4,6 +4,7 @@
 import argparse
 import matplotlib.pyplot as plt
 import seaborn as sns
+from scipy import ndimage
 from HiCmodule import JuicerMatrix
 from InsulationScore import getInsulationScoreOfMultiSample
 from generateCmap import *
@@ -21,8 +22,6 @@ if(__name__ == '__main__'):
     parser.add_argument("-r", "--resolution", help="resolution", type=int, default=25000)
     parser.add_argument("-s", "--start", help="start bp", type=int, default=0)
     parser.add_argument("-e", "--end", help="end bp", type=int, default=1000000)
-    parser.add_argument("-x", "--sizex", help="Size of x axis (default: 30)", type=int, default=30)
-    parser.add_argument("-y", "--sizey", help="Size of y axis (default: 2)", type=int, default=2)
     parser.add_argument("--multi", help="plot MultiInsulation Score", action='store_true')
 
     args = parser.parse_args()
@@ -62,17 +61,36 @@ if(__name__ == '__main__'):
 
     ### Plot
     if (args.multi):
-        plt.figure(figsize=(10, 8))
+        plt.figure(figsize=(10, 10))
+        nrow = len(samples)+2
 
+        # Hi-C Map
+        plt.subplot2grid((nrow, 5), (0,0), rowspan=2, colspan=4)
+        dst = ndimage.rotate(samples[0].getmatrix().iloc[s:e,s:e], 45,
+                             order=0, reshape=True, prefilter=False, cval=0)
+        img = plt.imshow(dst, clim=(0, 40), cmap=generate_cmap(['#FFFFFF', '#d10a3f']),
+                         interpolation="nearest", aspect='auto')
+        plt.ylim(int(dst.shape[0]/2)+1,0)
+        plt.title(labels[0])
+        #        pltxticks(0, (e-s)*1.41, figstart, figend, 10)
+        plt.tick_params(
+            axis='x',          # changes apply to the x-axis
+            which='both',      # both major and minor ticks are affected
+            bottom=False,      # ticks along the bottom edge are off
+            top=False,         # ticks along the top edge are off
+            labelbottom=False  # labels along the bottom edge are off
+        )
+
+        # Insulation score
         for i, sample in enumerate(samples):
-            plt.subplot2grid((len(samples), 4), (i, 0), rowspan=1, colspan=4)
+            plt.subplot2grid((nrow, 5), (i+2, 0), rowspan=1, colspan=5)
             MI = sample.getMultiInsulationScore()
             plt.imshow(MI.T.iloc[:,s:e],
                        clim=(0.4, 1.0),
                        cmap=generate_cmap(['#d10a3f', '#FFFFFF', '#1310cc']),
                        aspect="auto")
             plt.title(labels[i])
-            pltxticks(0, e-s, figstart, figend, 20)
+            pltxticks(0, e-s, figstart, figend, 10)
 #            plt.yticks([2], (labels[i]))
 
 #            plt.xlim([s,e])
@@ -80,14 +98,34 @@ if(__name__ == '__main__'):
             plt.colorbar()
         plt.tight_layout()
     else:
+        plt.figure(figsize=(10,6))
+
+        # Hi-C Map
+        plt.subplot2grid((4, 5), (0,0), rowspan=2, colspan=4)
+        dst = ndimage.rotate(samples[0].getmatrix().iloc[s:e,s:e], 45,
+                             order=0, reshape=True, prefilter=False, cval=0)
+        img = plt.imshow(dst, clim=(0, 40), cmap=generate_cmap(['#FFFFFF', '#d10a3f']),
+                         interpolation="nearest", aspect='auto')
+        plt.ylim(int(dst.shape[0]/2)+1,0)
+        plt.title(labels[0])
+        #        pltxticks(0, (e-s)*1.41, figstart, figend, 10)
+        plt.tick_params(
+            axis='x',          # changes apply to the x-axis
+            which='both',      # both major and minor ticks are affected
+            bottom=False,      # ticks along the bottom edge are off
+            top=False,         # ticks along the top edge are off
+            labelbottom=False  # labels along the bottom edge are off
+        )
+
+        # Insulation score
+        plt.subplot2grid((4, 5), (2,0), rowspan=2, colspan=5)
         Matrix = getInsulationScoreOfMultiSample(samples, labels)
-        plt.figure(figsize=(11,2))
         plt.imshow(Matrix.T.iloc[:,s:e],
                    clim=(0.4, 1.0),
                    cmap=generate_cmap(['#d10a3f', '#FFFFFF', '#1310cc']),
                    aspect="auto")
         plt.colorbar()
-        pltxticks(0, e-s, figstart, figend, 20)
+        pltxticks(0, e-s, figstart, figend, 10)
         plt.yticks(np.arange(len(labels)), labels)
 
     plt.savefig(args.output + ".png")
