@@ -66,22 +66,24 @@ if(__name__ == '__main__'):
 
         for i, sample in enumerate(samples):
             plt.subplot2grid((len(samples), 4), (i, 0), rowspan=1, colspan=4)
-            plt.imshow(sample.getMultiInsulationScore(),
-#                       clim=(-0.5, 1),
+            MI = sample.getMultiInsulationScore()
+            plt.imshow(MI.T.iloc[:,s:e],
+                       clim=(0.4, 1.0),
                        cmap=generate_cmap(['#d10a3f', '#FFFFFF', '#1310cc']),
                        aspect="auto")
             plt.title(labels[i])
+            pltxticks(0, e-s, figstart, figend, 20)
 #            plt.yticks([2], (labels[i]))
 
-            plt.xlim([s,e])
-            pltxticks(s, e, figstart, figend, 10)
+#            plt.xlim([s,e])
+#            pltxticks(s, e, figstart, figend, 10)
             plt.colorbar()
         plt.tight_layout()
     else:
         Matrix = getInsulationScoreOfMultiSample(samples, labels)
         plt.figure(figsize=(11,2))
         plt.imshow(Matrix.T.iloc[:,s:e],
- #                  clim=(-0.5, 1),
+                   clim=(0.4, 1.0),
                    cmap=generate_cmap(['#d10a3f', '#FFFFFF', '#1310cc']),
                    aspect="auto")
         plt.colorbar()

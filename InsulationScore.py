@@ -51,7 +51,7 @@ class MultiInsulationScore:
         i = np.where(self.MI.index == distance)[0][0]
         return self.MI.iloc[i:i+1].T
     def getMultiInsulationScore(self):
-        return self.MI
+        return self.MI.T
 
 def getTADboundary(array, resolution):
     distance = int(100000 / resolution)
