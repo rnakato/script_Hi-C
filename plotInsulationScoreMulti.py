@@ -68,7 +68,7 @@ if(__name__ == '__main__'):
         plt.subplot2grid((nrow, 5), (0,0), rowspan=2, colspan=4)
         dst = ndimage.rotate(samples[0].getmatrix().iloc[s:e,s:e], 45,
                              order=0, reshape=True, prefilter=False, cval=0)
-        img = plt.imshow(dst, clim=(0, 40), cmap=generate_cmap(['#FFFFFF', '#d10a3f']),
+        img = plt.imshow(dst, clim=(0, 50), cmap=generate_cmap(['#FFFFFF', '#d10a3f']),
                          interpolation="nearest", aspect='auto')
         plt.ylim(int(dst.shape[0]/2)+1,0)
         plt.title(labels[0])
@@ -104,7 +104,7 @@ if(__name__ == '__main__'):
         plt.subplot2grid((4, 5), (0,0), rowspan=2, colspan=4)
         dst = ndimage.rotate(samples[0].getmatrix().iloc[s:e,s:e], 45,
                              order=0, reshape=True, prefilter=False, cval=0)
-        img = plt.imshow(dst, clim=(0, 40), cmap=generate_cmap(['#FFFFFF', '#d10a3f']),
+        img = plt.imshow(dst, clim=(0, 50), cmap=generate_cmap(['#FFFFFF', '#d10a3f']),
                          interpolation="nearest", aspect='auto')
         plt.ylim(int(dst.shape[0]/2)+1,0)
         plt.title(labels[0])
