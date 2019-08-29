@@ -12,7 +12,7 @@ from PlotModule import pltxticks
 
 #import pdb
 
-if(__name__ == '__main__'):
+def main():
     parser = argparse.ArgumentParser()
     tp = lambda x:list(map(str, x.split(':')))
     parser.add_argument("input", help="<Input direcoty>:<label>", type=tp, nargs='*')
@@ -50,40 +50,64 @@ if(__name__ == '__main__'):
     for dir in dirs:
         observed = dir + "/matrix/intrachromosomal/" + str(resolution) + "/observed."  + type + "." + chr + ".matrix.gz"
 #        oe = dir + "/matrix/intrachromosomal/" + str(resolution) + "/oe."  + type + "." + chr + ".matrix.gz"
-#        eigen = dir + "/eigen/" + str(resolution) + "/gd_eigen."  + type + "." + chr + ".txt"
-        eigen = ""
-        print (observed)
+        eigen = dir + "/eigen/" + str(resolution) + "/gd_eigen."  + type + "." + chr + ".txt"
+#        eigen = ""
+ #       print (observed)
  #       print (oe)
 #        print (eigen)
 
         samples.append(JuicerMatrix("RPM", observed, eigen, resolution))
-        print ("\n")
+    #        print ("\n")
+
+    nrow_heatmap = 3
+    nrow_eigen = 1
+    nrow_now = 0
 
     ### Plot
     if (args.multi):
-        plt.figure(figsize=(10, 10))
-        nrow = len(samples)+2
+        plt.figure(figsize=(10, 14))
+        nrow = nrow_heatmap + nrow_eigen + len(samples)
+    else:
+        plt.figure(figsize=(10,6))
+        nrow = nrow_heatmap + nrow_eigen + 2
 
-        # Hi-C Map
-        plt.subplot2grid((nrow, 5), (0,0), rowspan=2, colspan=4)
-        dst = ndimage.rotate(samples[0].getmatrix().iloc[s:e,s:e], 45,
-                             order=0, reshape=True, prefilter=False, cval=0)
-        img = plt.imshow(dst, clim=(0, 50), cmap=generate_cmap(['#FFFFFF', '#d10a3f']),
-                         interpolation="nearest", aspect='auto')
-        plt.ylim(int(dst.shape[0]/2)+1,0)
-        plt.title(labels[0])
-        #        pltxticks(0, (e-s)*1.41, figstart, figend, 10)
-        plt.tick_params(
-            axis='x',          # changes apply to the x-axis
-            which='both',      # both major and minor ticks are affected
-            bottom=False,      # ticks along the bottom edge are off
-            top=False,         # ticks along the top edge are off
-            labelbottom=False  # labels along the bottom edge are off
-        )
+    # Hi-C Map
+    plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_heatmap, colspan=4)
+    dst = ndimage.rotate(samples[0].getmatrix().iloc[s:e,s:e], 45,
+                         order=0, reshape=True, prefilter=False, cval=0)
+    img = plt.imshow(dst, clim=(0, 50), cmap=generate_cmap(['#FFFFFF', '#d10a3f']),
+                     interpolation="nearest", aspect='auto')
+    plt.ylim(int(dst.shape[0]/2)+1,0)
+    plt.title(labels[0])
+    #        pltxticks(0, (e-s)*1.41, figstart, figend, 10)
+    plt.tick_params(
+        axis='x',          # changes apply to the x-axis
+        which='both',      # both major and minor ticks are affected
+        bottom=False,      # ticks along the bottom edge are off
+        top=False,         # ticks along the top edge are off
+        labelbottom=False  # labels along the bottom edge are off
+    )
 
-        # Insulation score
+    nrow_now += nrow_heatmap
+
+    # Compartment
+    plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_eigen, colspan=4)
+    plt.plot(samples[0].getEigen())
+    plt.xlim([s,e])
+    plt.tick_params(
+        axis='x',          # changes apply to the x-axis
+        which='both',      # both major and minor ticks are affected
+        bottom=False,      # ticks along the bottom edge are off
+        top=False,         # ticks along the top edge are off
+        labelbottom=False  # labels along the bottom edge are off
+    )
+
+    nrow_now += nrow_eigen
+
+    # Insulation score
+    if (args.multi):
         for i, sample in enumerate(samples):
-            plt.subplot2grid((nrow, 5), (i+2, 0), rowspan=1, colspan=5)
+            plt.subplot2grid((nrow, 5), (i + nrow_now, 0), rowspan=1, colspan=5)
             MI = sample.getMultiInsulationScore()
             plt.imshow(MI.T.iloc[:,s:e],
                        clim=(0.4, 1.0),
@@ -98,27 +122,7 @@ if(__name__ == '__main__'):
             plt.colorbar()
         plt.tight_layout()
     else:
-        plt.figure(figsize=(10,6))
-
-        # Hi-C Map
-        plt.subplot2grid((4, 5), (0,0), rowspan=2, colspan=4)
-        dst = ndimage.rotate(samples[0].getmatrix().iloc[s:e,s:e], 45,
-                             order=0, reshape=True, prefilter=False, cval=0)
-        img = plt.imshow(dst, clim=(0, 50), cmap=generate_cmap(['#FFFFFF', '#d10a3f']),
-                         interpolation="nearest", aspect='auto')
-        plt.ylim(int(dst.shape[0]/2)+1,0)
-        plt.title(labels[0])
-        #        pltxticks(0, (e-s)*1.41, figstart, figend, 10)
-        plt.tick_params(
-            axis='x',          # changes apply to the x-axis
-            which='both',      # both major and minor ticks are affected
-            bottom=False,      # ticks along the bottom edge are off
-            top=False,         # ticks along the top edge are off
-            labelbottom=False  # labels along the bottom edge are off
-        )
-
-        # Insulation score
-        plt.subplot2grid((4, 5), (2,0), rowspan=2, colspan=5)
+        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=5)
         Matrix = getInsulationScoreOfMultiSample(samples, labels)
         plt.imshow(Matrix.T.iloc[:,s:e],
                    clim=(0.4, 1.0),
@@ -128,4 +132,7 @@ if(__name__ == '__main__'):
         pltxticks(0, e-s, figstart, figend, 10)
         plt.yticks(np.arange(len(labels)), labels)
 
-    plt.savefig(args.output + ".png")
+    plt.savefig(args.output + ".pdf")
+
+if(__name__ == '__main__'):
+    main()
