@@ -9,7 +9,7 @@ from HiCmodule import JuicerMatrix
 from InsulationScore import getInsulationScoreOfMultiSample
 from DirectionalityIndex import getDirectionalityIndexOfMultiSample
 from generateCmap import *
-from Cluster import make3dmatrix
+from Cluster import make3dmatrixRatio
 from PlotModule import pltxticks
 
 #import pdb
@@ -64,7 +64,7 @@ if(__name__ == '__main__'):
     ### Plot
 
     smooth_median_filter = 3
-    EnrichMatrices = make3dmatrix(samples, smooth_median_filter)
+    EnrichMatrices = make3dmatrixRatio(samples, smooth_median_filter)
 
     nsample = len(samples) -1
     plt.figure(figsize=(10, nsample*3))

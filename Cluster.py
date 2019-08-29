@@ -31,8 +31,8 @@ def DBSCANPlot(matrix, title, eps):
     plt.title(title, size=16)
     return dbscan
 
-def make3dmatrix(samples, smoooth):
-    from scipy import ndimage 
+def make3dmatrixRatio(samples, smoooth):
+    from scipy import ndimage
     n = len(samples)
     Ct = ndimage.median_filter(samples[0].getlog(isNonZero=False), smoooth)
     x, y = Ct.shape
@@ -72,7 +72,7 @@ def get_ellipse_coords(a=0.0, b=0.0, x=0.0, y=0.0, angle=0.0, k=2):
     angle = clockwise rotation [in degrees] of the ellipse;
         * angle=0  : the ellipse is aligned with the positive x-axis
         * angle=30 : rotated 30 degrees clockwise from positive x-axis
-        
+
     this function is obtained from : http://scipy-central.org/item/23/2/plot-an-ellipse
     """
     pts = np.zeros((int(180*k+1), 2))
@@ -81,10 +81,10 @@ def get_ellipse_coords(a=0.0, b=0.0, x=0.0, y=0.0, angle=0.0, k=2):
     sin_beta = np.sin(beta)
     cos_beta = np.cos(beta)
     alpha = -np.radians(np.r_[0.:180.:1j*(180*k+1)])
- 
+
     sin_alpha = np.sin(alpha)
     cos_alpha = np.cos(alpha)
-    
+
     pts[:, 0] = x + (a * cos_alpha * cos_beta - b * sin_alpha * sin_beta)
     pts[:, 1] = y + (a * cos_alpha * sin_beta + b * sin_alpha * cos_beta)
 
@@ -107,7 +107,7 @@ def plotVsegmentArc(vsegment, s, e, xstart, resolution):
         e = index[-1]/resolution + 1 - xstart
         common = int((s+e)/2)
         return s,e,common
-    
+
     if(s>e): return
     sindex = vsegment[s]
     eindex = vsegment[e]
@@ -123,7 +123,7 @@ def plotVArc(s, e, xstart, resolution):
         e = index/resolution + 1 - xstart
         common = int((s+e)/2)
         return s,e,common
-    
+
     if(s>e): return
     s1, e1, c1 = getBed(s, xstart, resolution)
     s2, e2, c2 = getBed(e, xstart, resolution)
@@ -147,7 +147,7 @@ def get_corr_allcluster(sub3d, ncluster, kmeans, labels):
         for i in range(nlabels-1):
             for x in corr_mat[i,i+1:nlabels]: a.append(x)
         return a
-    
+
     nlabels = len(labels)
     for cl in range(ncluster):
         df = pd.DataFrame(sub3d[kmeans==cl])
@@ -175,7 +175,7 @@ def draw_samples_whole(matrix, labels, cm):
         ax.set_title(labels[i])
     plt.tight_layout()
     plt.show()
-    
+
 def addzero_to_3dmatrix(mat, difflength, resolution):
     diff = difflength / resolution
     lim_pzero = 0.1

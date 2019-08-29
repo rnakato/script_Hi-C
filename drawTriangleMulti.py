@@ -19,6 +19,7 @@ if(__name__ == '__main__'):
     parser.add_argument("input", help="<Input direcoty>:<label>", type=tp, nargs='*')
     parser.add_argument("output", help="Output prefix", type=str)
     parser.add_argument("chr", help="chromosome", type=str)
+    parser.add_argument("--log", help="logged count", action='store_true')
     parser.add_argument("--type", help="normalize type", type=str, default="KR")
     parser.add_argument("-d", "--distance", help="distance for DI", type=int, default=500000)
     parser.add_argument("-r", "--resolution", help="resolution", type=int, default=25000)
@@ -68,9 +69,15 @@ if(__name__ == '__main__'):
     for i, sample in enumerate(samples):
         # Hi-C Map
         plt.subplot2grid((nsample*2, 4), (i*2,0), rowspan=2, colspan=4)
-        dst = ndimage.rotate(sample.getmatrix().iloc[s:e,s:e], 45,
+        if (args.log):
+            df = sample.getlog()
+            valmax = 6
+        else:
+            df = sample.getmatrix()
+            valmax = 50
+        dst = ndimage.rotate(df.iloc[s:e,s:e], 45,
                              order=0, reshape=True, prefilter=False, cval=0)
-        img = plt.imshow(dst, clim=(0, 50), cmap=generate_cmap(['#FFFFFF', '#d10a3f']),
+        img = plt.imshow(dst, clim=(0, valmax), cmap=generate_cmap(['#FFFFFF', '#d10a3f']),
                          interpolation="nearest", aspect='auto')
         plt.ylim(int(dst.shape[0]/2)+1,0)
         plt.title(labels[i])
