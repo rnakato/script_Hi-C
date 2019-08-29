@@ -46,6 +46,13 @@ def main():
     figend = args.end
     s = int(figstart / resolution)
     e = int(figend   / resolution)
+    length = figend - figstart
+    binnum = e-s
+
+    print ("width: " + str(length) + ", " + str(binnum) + " bins.")
+    if (length <= 0):
+        print ("Error: end < start.")
+        exit(1)
 
     print (chr)
     print (resolution)
