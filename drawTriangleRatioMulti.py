@@ -77,7 +77,7 @@ if(__name__ == '__main__'):
         img = plt.imshow(dst, clim=(-2, 2), cmap=generate_cmap(['#1310cc', '#FFFFFF', '#d10a3f']),
                          interpolation="nearest", aspect='auto')
         plt.ylim(int(dst.shape[0]/2)+1,0)
-        plt.title(labels[i])
+        plt.title(labels[i+1])
         #        pltxticks(0, (e-s)*1.41, figstart, figend, 10)
         plt.tick_params(
             axis='x',          # changes apply to the x-axis
