@@ -10,10 +10,12 @@ from InsulationScore import getInsulationScoreOfMultiSample
 from DirectionalityIndex import getDirectionalityIndexOfMultiSample
 from generateCmap import *
 from PlotModule import pltxticks
+import pysnooper
 
 #import pdb
 
-if(__name__ == '__main__'):
+@pysnooper.snoop()
+def main():
     parser = argparse.ArgumentParser()
     tp = lambda x:list(map(str, x.split(':')))
     parser.add_argument("input", help="<Input direcoty>:<label>", type=tp, nargs='*')
@@ -50,14 +52,13 @@ if(__name__ == '__main__'):
     samples = []
     for dir in dirs:
         observed = dir + "/matrix/intrachromosomal/" + str(resolution) + "/observed."  + type + "." + chr + ".matrix.gz"
-        oe = dir + "/matrix/intrachromosomal/" + str(resolution) + "/oe."  + type + "." + chr + ".matrix.gz"
+#        oe = dir + "/matrix/intrachromosomal/" + str(resolution) + "/oe."  + type + "." + chr + ".matrix.gz"
         eigen = dir + "/eigen/" + str(resolution) + "/gd_eigen."  + type + "." + chr + ".txt"
 
         print (observed)
-        print (oe)
         print (eigen)
 
-        samples.append(JuicerMatrix("RPM", observed, oe, eigen, resolution))
+        samples.append(JuicerMatrix("RPM", observed, eigen, resolution))
         print ("\n")
 
     ### Plot
@@ -69,7 +70,8 @@ if(__name__ == '__main__'):
                          order=0, reshape=True, prefilter=False, cval=0)
     img = plt.imshow(dst, clim=(0, 50), cmap=generate_cmap(['#FFFFFF', '#d10a3f']),
                      interpolation="nearest", aspect='auto')
-    plt.ylim(int(dst.shape[0]/2)+1,0)
+#    plt.ylim(int(dst.shape[0]/2)+1,0)
+    plt.ylim(dst.shape[0]/2,0)
     plt.title(labels[0])
     #        pltxticks(0, (e-s)*1.41, figstart, figend, 10)
     plt.tick_params(
@@ -92,3 +94,6 @@ if(__name__ == '__main__'):
     plt.yticks(np.arange(len(labels)), labels)
 
     plt.savefig(args.output + ".png")
+
+if(__name__ == '__main__'):
+    main()

@@ -21,47 +21,38 @@ def getNonZeroMatrix(A, lim_pzero):
     return A
 
 class JuicerMatrix:
-    def __init__(self, norm, rawmatrix, oematrix, eigenfile, res):
+    def __init__(self, norm, rawmatrix, eigenfile, res):
         self.res = res
         self.raw = loadDenseMatrix(rawmatrix)
-        self.oe  = loadDenseMatrix(oematrix)
+#        self.oe  = loadDenseMatrix(oematrix)
         self.eigen = np.loadtxt(eigenfile)
         if norm == "RPM":
             self.raw = self.raw * 10000000 / np.nansum(self.raw)
-            self.oe  = self.oe  * 10000000 / np.nansum(self.oe)
+#            self.oe  = self.oe  * 10000000 / np.nansum(self.oe)
         self.InsulationScore = MultiInsulationScore(self.getmatrix().values, 1000000, 100000, self.res)
 
-    def getmatrix(self, *, isOE=False, isNonZero=False):
-        if isOE == False:
-            if isNonZero == True:
-                return getNonZeroMatrix(self.raw, 0)
-            else:
-                return self.raw
+    def getmatrix(self, *, isNonZero=False):
+        if isNonZero == True:
+            return getNonZeroMatrix(self.raw, 0)
         else:
-            if isNonZero == True:
-                return getNonZeroMatrix(self.oe, 0)
-            else:
-                return self.oe
+            return self.raw
 
-    def getlog(self, *, isOE=False, isNonZero=False):
-        mat = self.getmatrix(isOE=isOE, isNonZero=isNonZero)
+    def getlog(self, *, isNonZero=False):
+        mat = self.getmatrix(isNonZero=isNonZero)
         logmat = mat.apply(np.log1p)
         return logmat
 
-    def getZscore(self, *, isOE=False):
-        logmat = self.getlog(isOE=isOE)
+    def getZscore(self):
+        logmat = self.getlog()
         zmat = pd.DataFrame(sp.stats.zscore(logmat, axis=1), index=logmat.index, columns=logmat.index)
         return zmat
 
-    def getPearson(self, *, isOE=False):
-        oe = self.getlog(isOE=isOE)
-#        oe = self.getmatrix(isOE=isOE)
-#        cov = logmat.cov()
- #       ccmat = np.corrcoef(cov)
-        ccmat = np.corrcoef(oe)
-        ccmat[np.isnan(ccmat)] = 0
-        ccmat = pd.DataFrame(ccmat, index=oe.index, columns=oe.index)
-        return ccmat
+#    def getPearson(self, *, isOE=False):
+#        oe = self.getlog(isOE=isOE)
+#        ccmat = np.corrcoef(oe)
+#        ccmat[np.isnan(ccmat)] = 0
+#        ccmat = pd.DataFrame(ccmat, index=oe.index, columns=oe.index)
+#        return ccmat
 
     def getEigen(self):
         return self.eigen
