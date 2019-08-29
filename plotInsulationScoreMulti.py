@@ -135,8 +135,10 @@ def main():
         nrow_now += 2
 
         plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=4)
-        plt.plot(Matrix.iloc[s:e,:])
+        for i in range(len(samples)):
+            plt.plot(Matrix.iloc[s:e,i], label=labels[i])
         plt.xlim([figstart, figend])
+#        plt.legend()
 
     plt.savefig(args.output + ".pdf")
 
