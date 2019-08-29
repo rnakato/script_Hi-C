@@ -13,7 +13,7 @@ from PlotModule import pltxticks
 
 #import pdb
 
-if(__name__ == '__main__'):
+def main():
     parser = argparse.ArgumentParser()
     tp = lambda x:list(map(str, x.split(':')))
     parser.add_argument("input", help="<Input direcoty>:<label>", type=tp, nargs='*')
@@ -91,4 +91,7 @@ if(__name__ == '__main__'):
         )
 
     plt.tight_layout()
-    plt.savefig(args.output + ".png")
+    plt.savefig(args.output + ".pdf")
+
+if(__name__ == '__main__'):
+    main()
