@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import scipy.stats as sp
 import pandas as pd
@@ -23,9 +24,14 @@ def getNonZeroMatrix(A, lim_pzero):
 class JuicerMatrix:
     def __init__(self, norm, rawmatrix, eigenfile, res):
         self.res = res
-        self.raw = loadDenseMatrix(rawmatrix)
-#        self.oe  = loadDenseMatrix(oematrix)
-        self.eigen = np.loadtxt(eigenfile)
+        if os.path.exists(rawmatrix):
+            self.raw = loadDenseMatrix(rawmatrix)
+  #      else:
+#            print ("Warning: matrix file is not exist.")
+        if os.path.exists(eigenfile):
+            self.eigen = np.loadtxt(eigenfile)
+   #     else:
+ #           print ("Warning: eigen file is not exist.")
         if norm == "RPM":
             self.raw = self.raw * 10000000 / np.nansum(self.raw)
 #            self.oe  = self.oe  * 10000000 / np.nansum(self.oe)

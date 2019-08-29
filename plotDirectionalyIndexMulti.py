@@ -53,10 +53,10 @@ def main():
     for dir in dirs:
         observed = dir + "/matrix/intrachromosomal/" + str(resolution) + "/observed."  + type + "." + chr + ".matrix.gz"
 #        oe = dir + "/matrix/intrachromosomal/" + str(resolution) + "/oe."  + type + "." + chr + ".matrix.gz"
-        eigen = dir + "/eigen/" + str(resolution) + "/gd_eigen."  + type + "." + chr + ".txt"
-
+#        eigen = dir + "/eigen/" + str(resolution) + "/gd_eigen."  + type + "." + chr + ".txt"
+        eigen = "
         print (observed)
-        print (eigen)
+ #       print (eigen)
 
         samples.append(JuicerMatrix("RPM", observed, eigen, resolution))
         print ("\n")
