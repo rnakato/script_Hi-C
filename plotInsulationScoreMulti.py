@@ -69,7 +69,7 @@ def main():
         nrow = nrow_heatmap + nrow_eigen + len(samples)
     else:
         plt.figure(figsize=(10,6))
-        nrow = nrow_heatmap + nrow_eigen + 2
+        nrow = nrow_heatmap + nrow_eigen + 4
 
     # Hi-C Map
     plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_heatmap, colspan=4)
@@ -122,8 +122,8 @@ def main():
             plt.colorbar()
         plt.tight_layout()
     else:
-        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=5)
         Matrix = getInsulationScoreOfMultiSample(samples, labels)
+        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=5)
         plt.imshow(Matrix.T.iloc[:,s:e],
                    clim=(0.4, 1.0),
                    cmap=generate_cmap(['#d10a3f', '#FFFFFF', '#1310cc']),
@@ -131,6 +131,12 @@ def main():
         plt.colorbar()
         pltxticks(0, e-s, figstart, figend, 10)
         plt.yticks(np.arange(len(labels)), labels)
+
+        nrow_now += 2
+
+        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=4)
+        plt.plot(Matrix.iloc[s:e,:])
+        plt.xlim([figstart, figend])
 
     plt.savefig(args.output + ".pdf")
 
