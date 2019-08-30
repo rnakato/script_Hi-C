@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import ndimage
 from generateCmap import *
@@ -38,10 +39,10 @@ def drawHeatmapSquare(plt, matrix, resolution, *, tads="", figstart=0, figend=0,
                cmap=generate_cmap(['#FFFFFF', '#d10a3f']),
                interpolation="nearest", aspect='auto')
 
-    if (type(tads) != "str"):
+    if (isinstance(tads, pd.DataFrame)):
         for tad in tads.itertuples(name=None):
-            x1 = int(int(tad[2])/resolution) - s
-            x2 = int(int(tad[3])/resolution) - s
+            x1 = int(tad[2])/resolution - s
+            x2 = int(tad[3])/resolution - s
             plt.vlines(x1, 0, matrix.shape[0], linestyle='dashed', linewidth=0.3)
             plt.vlines(x2, 0, matrix.shape[0], linestyle='dashed', linewidth=0.3)
 
@@ -62,15 +63,18 @@ def drawHeatmapTriangle(plt, matrix, resolution, *, tads="", figstart=0, figend=
                interpolation="nearest", aspect='auto')
 
     ynum = dst.shape[0]/2
-    if (type(tads) != "str"):
+    if (isinstance(tads, pd.DataFrame)):
         for tad in tads.itertuples(name=None):
-            x1 = (int(tad[2])/resolution) - s
-            x2 = (int(tad[3])/resolution) - s
+            x1 = int(tad[2])/resolution - s
+            x2 = int(tad[3])/resolution - s
             x1 *= 1.41
             x2 *= 1.41
-            xmed = (x1+x2)/2
-            plt.plot([x1, xmed],[ynum, ynum-(xmed-x1)], color='k', linestyle='dashed', linewidth=0.6)
-            plt.plot([x2, xmed],[ynum, ynum-(xmed-x1)], color='k', linestyle='dashed', linewidth=0.6)
+            if (x1 >0):
+                xmed = (x1 + min([x2, e]))/2
+                plt.plot([x1, min([xmed, x2])],[ynum, ynum-(xmed-x1)], color='k', linestyle='dashed', linewidth=0.6)
+            if (x2 < e):
+                xmed = (max([x1, 0]) + x2) /2
+                plt.plot([x2, xmed],[ynum, ynum-(x2-xmed)], color='k', linestyle='dashed', linewidth=0.6)
 
     plt.ylim(ynum,0)
     if (label != ""): plt.title(label)
