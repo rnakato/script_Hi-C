@@ -6,11 +6,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy import ndimage
 from HiCmodule import JuicerMatrix
-from InsulationScore import getInsulationScoreOfMultiSample
-from DirectionalityIndex import getDirectionalityIndexOfMultiSample
 from generateCmap import *
 from Cluster import make3dmatrixRatio
-from PlotModule import pltxticks
+from PlotModule import *
 
 #import pdb
 def main():
@@ -54,12 +52,11 @@ def main():
         #       eigen = dir + "/eigen/" + str(resolution) + "/gd_eigen."  + type + "." + chr + ".txt"
         eigen = ""
 
-        print (observed)
+#        print (observed)
  #       print (oe)
 #        print (eigen)
 
-        samples.append(JuicerMatrix("RPM", observed, eigen, resolution))
-        print ("\n")
+        samples.append(JuicerMatrix("RPM", observed, resolution, eigenfile=eigen))
 
     ### Plot
 
@@ -79,13 +76,7 @@ def main():
         plt.ylim(int(dst.shape[0]/2)+1,0)
         plt.title(labels[i+1])
         #        pltxticks(0, (e-s)*1.41, figstart, figend, 10)
-        plt.tick_params(
-            axis='x',          # changes apply to the x-axis
-            which='both',      # both major and minor ticks are affected
-            bottom=False,      # ticks along the bottom edge are off
-            top=False,         # ticks along the top edge are off
-            labelbottom=False  # labels along the bottom edge are off
-        )
+        xtickoff(plt)
 
     plt.tight_layout()
     plt.savefig(args.output + ".pdf")
