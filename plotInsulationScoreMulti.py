@@ -4,11 +4,11 @@
 import argparse
 import matplotlib.pyplot as plt
 import seaborn as sns
-from scipy import ndimage
 from HiCmodule import JuicerMatrix
 from InsulationScore import getInsulationScoreOfMultiSample
 from generateCmap import *
-from PlotModule import pltxticks
+from PlotModule import *
+from loadData import loadTADs
 
 #import pdb
 
@@ -49,15 +49,11 @@ def main():
     samples = []
     for dir in dirs:
         observed = dir + "/matrix/intrachromosomal/" + str(resolution) + "/observed."  + type + "." + chr + ".matrix.gz"
-#        oe = dir + "/matrix/intrachromosomal/" + str(resolution) + "/oe."  + type + "." + chr + ".matrix.gz"
         eigen = dir + "/eigen/" + str(resolution) + "/gd_eigen."  + type + "." + chr + ".txt"
-#        eigen = ""
  #       print (observed)
- #       print (oe)
 #        print (eigen)
 
-        samples.append(JuicerMatrix("RPM", observed, eigen, resolution))
-    #        print ("\n")
+        samples.append(JuicerMatrix("RPM", observed, resolution, eigenfile=eigen))
 
     nrow_heatmap = 3
     nrow_eigen = 1
@@ -73,20 +69,15 @@ def main():
 
     # Hi-C Map
     plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_heatmap, colspan=4)
-    dst = ndimage.rotate(samples[0].getmatrix().iloc[s:e,s:e], 45,
-                         order=0, reshape=True, prefilter=False, cval=0)
-    img = plt.imshow(dst, clim=(0, 50), cmap=generate_cmap(['#FFFFFF', '#d10a3f']),
-                     interpolation="nearest", aspect='auto')
-    plt.ylim(int(dst.shape[0]/2)+1,0)
-    plt.title(labels[0])
-    #        pltxticks(0, (e-s)*1.41, figstart, figend, 10)
-    plt.tick_params(
-        axis='x',          # changes apply to the x-axis
-        which='both',      # both major and minor ticks are affected
-        bottom=False,      # ticks along the bottom edge are off
-        top=False,         # ticks along the top edge are off
-        labelbottom=False  # labels along the bottom edge are off
-    )
+
+    tadfile = dirs[0] + "/contact_domain/" + str(resolution) + "_blocks.bedpe"
+    print(tadfile)
+    tads = loadTADs(tadfile, chr[3:], start=figstart, end=figend)
+
+    drawHeatmapTriangle(plt, samples[0].getmatrix(), resolution,
+                      figstart=figstart, figend=figend, tads=tads,
+                      vmax=50, label=labels[0], xticks=False)
+
 
     nrow_now += nrow_heatmap
 

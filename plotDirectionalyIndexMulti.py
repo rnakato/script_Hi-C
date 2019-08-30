@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 #from scipy import ndimage
 from HiCmodule import JuicerMatrix
-from InsulationScore import getInsulationScoreOfMultiSample
 from DirectionalityIndex import getDirectionalityIndexOfMultiSample
 from generateCmap import *
 from loadData import loadTADs
@@ -75,8 +74,8 @@ def main():
     tads = loadTADs(tadfile, chr[3:], start=figstart, end=figend)
 
     drawHeatmapTriangle(plt, samples[0].getmatrix(), resolution,
-                      figstart=figstart, figend=figend, tads=tads,
-                      vmax=50, label=labels[0], xticks=False)
+                        figstart=figstart, figend=figend, tads=tads,
+                        vmax=50, label=labels[0], xticks=False)
 
     # Compartment
     plt.subplot2grid((7, 5), (3,0), rowspan=1, colspan=4)

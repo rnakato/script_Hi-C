@@ -4,12 +4,11 @@
 import argparse
 import matplotlib.pyplot as plt
 import seaborn as sns
-from scipy import ndimage
 from HiCmodule import JuicerMatrix
 from InsulationScore import getInsulationScoreOfMultiSample
-from DirectionalityIndex import getDirectionalityIndexOfMultiSample
 from generateCmap import *
-from PlotModule import pltxticks
+from loadData import loadTADs
+from PlotModule import *
 
 #import pdb
 
@@ -52,14 +51,11 @@ def main():
     for dir in dirs:
         observed = dir + "/matrix/intrachromosomal/" + str(resolution) + "/observed."  + type + "." + chr + ".matrix.gz"
 #        oe = dir + "/matrix/intrachromosomal/" + str(resolution) + "/oe."  + type + "." + chr + ".matrix.gz"
-        #eigen = dir + "/eigen/" + str(resolution) + "/gd_eigen."  + type + "." + chr + ".txt"
-        eigen = ""
-        print (observed)
- #       print (oe)
+        eigen = dir + "/eigen/" + str(resolution) + "/gd_eigen."  + type + "." + chr + ".txt"
+        #        print (observed)
         #print (eigen)
 
-        samples.append(JuicerMatrix("RPM", observed, eigen, resolution))
-        print ("\n")
+        samples.append(JuicerMatrix("RPM", observed, resolution, eigenfile=eigen))
 
     ### Plot
 
@@ -67,28 +63,26 @@ def main():
     plt.figure(figsize=(10, nsample*3))
 
     for i, sample in enumerate(samples):
+        tadfile = dirs[i] + "/contact_domain/" + str(resolution) + "_blocks.bedpe"
+        print(tadfile)
+        tads = loadTADs(tadfile, chr[3:], start=figstart, end=figend)
         # Hi-C Map
         plt.subplot2grid((nsample*2, 4), (i*2,0), rowspan=2, colspan=4)
         if (args.log):
-            df = sample.getlog()
-            valmax = 6
+            drawHeatmapTriangle(plt, sample.getlog(), resolution,
+                                figstart=figstart, figend=figend, tads=tads,
+                                vmax=6, label=labels[i], xticks=False)
         else:
-            df = sample.getmatrix()
-            valmax = 50
-        dst = ndimage.rotate(df.iloc[s:e,s:e], 45,
-                             order=0, reshape=True, prefilter=False, cval=0)
-        img = plt.imshow(dst, clim=(0, valmax), cmap=generate_cmap(['#FFFFFF', '#d10a3f']),
-                         interpolation="nearest", aspect='auto')
-        plt.ylim(int(dst.shape[0]/2)+1,0)
-        plt.title(labels[i])
+            drawHeatmapTriangle(plt, sample.getmatrix(), resolution,
+                                figstart=figstart, figend=figend, tads=tads,
+                                vmax=50, label=labels[i], xticks=False)
+#        dst = ndimage.rotate(df.iloc[s:e,s:e], 45,
+#                             order=0, reshape=True, prefilter=False, cval=0)
+#        img = plt.imshow(dst, clim=(0, valmax), cmap=generate_cmap(['#FFFFFF', '#d10a3f']),
+#                         interpolation="nearest", aspect='auto')
+#        plt.ylim(int(dst.shape[0]/2)+1,0)
+#        plt.title(labels[i])
         #        pltxticks(0, (e-s)*1.41, figstart, figend, 10)
-        plt.tick_params(
-            axis='x',          # changes apply to the x-axis
-            which='both',      # both major and minor ticks are affected
-            bottom=False,      # ticks along the bottom edge are off
-            top=False,         # ticks along the top edge are off
-            labelbottom=False  # labels along the bottom edge are off
-        )
 
     plt.tight_layout()
     plt.savefig(args.output + ".pdf")
