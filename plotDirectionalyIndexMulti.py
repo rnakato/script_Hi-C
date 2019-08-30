@@ -4,12 +4,13 @@
 import argparse
 import matplotlib.pyplot as plt
 import seaborn as sns
-from scipy import ndimage
+#from scipy import ndimage
 from HiCmodule import JuicerMatrix
 from InsulationScore import getInsulationScoreOfMultiSample
 from DirectionalityIndex import getDirectionalityIndexOfMultiSample
 from generateCmap import *
-from PlotModule import pltxticks
+from loadData import loadTADs
+from PlotModule import *
 #import pysnooper
 
 #import pdb
@@ -53,53 +54,35 @@ def main():
     if (length <= 0):
         print ("Error: end < start.")
         exit(1)
-
     print (chr)
     print (resolution)
+
     samples = []
     for dir in dirs:
         observed = dir + "/matrix/intrachromosomal/" + str(resolution) + "/observed."  + type + "." + chr + ".matrix.gz"
-#        oe = dir + "/matrix/intrachromosomal/" + str(resolution) + "/oe."  + type + "." + chr + ".matrix.gz"
         eigen = dir + "/eigen/" + str(resolution) + "/gd_eigen."  + type + "." + chr + ".txt"
-#        eigen = "
 #        print (observed)
  #       print (eigen)
-
-        samples.append(JuicerMatrix("RPM", observed, eigen, resolution))
-#        print ("\n")
+        samples.append(JuicerMatrix("RPM", observed, resolution, eigenfile=eigen))
 
     ### Plot
     plt.figure(figsize=(10,6))
 
     # Hi-C Map
     plt.subplot2grid((7, 5), (0,0), rowspan=3, colspan=4)
-    dst = ndimage.rotate(samples[0].getmatrix().iloc[s:e,s:e], 45,
-                         order=0, reshape=True, prefilter=False, cval=0)
-    img = plt.imshow(dst, clim=(0, 50), cmap=generate_cmap(['#FFFFFF', '#d10a3f']),
-                     interpolation="nearest", aspect='auto')
-#    plt.ylim(int(dst.shape[0]/2)+1,0)
-    plt.ylim(dst.shape[0]/2,0)
-    plt.title(labels[0])
-    #        pltxticks(0, (e-s)*1.41, figstart, figend, 10)
-    plt.tick_params(
-        axis='x',          # changes apply to the x-axis
-        which='both',      # both major and minor ticks are affected
-        bottom=False,      # ticks along the bottom edge are off
-        top=False,         # ticks along the top edge are off
-        labelbottom=False  # labels along the bottom edge are off
-    )
+    tadfile = dirs[0] + "/contact_domain/" + str(resolution) + "_blocks.bedpe"
+    print(tadfile)
+    tads = loadTADs(tadfile, chr[3:], start=figstart, end=figend)
+
+    drawHeatmapTriangle(plt, samples[0].getmatrix(), resolution,
+                      figstart=figstart, figend=figend, tads=tads,
+                      vmax=50, label=labels[0], xticks=False)
 
     # Compartment
     plt.subplot2grid((7, 5), (3,0), rowspan=1, colspan=4)
     plt.plot(samples[0].getEigen())
     plt.xlim([s,e])
-    plt.tick_params(
-        axis='x',          # changes apply to the x-axis
-        which='both',      # both major and minor ticks are affected
-        bottom=False,      # ticks along the bottom edge are off
-        top=False,         # ticks along the top edge are off
-        labelbottom=False  # labels along the bottom edge are off
-    )
+    xtickoff(plt)
 
     # DI
     plt.subplot2grid((7, 5), (4,0), rowspan=3, colspan=5)

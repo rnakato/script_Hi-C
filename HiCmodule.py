@@ -22,20 +22,16 @@ def getNonZeroMatrix(A, lim_pzero):
     return A
 
 class JuicerMatrix:
-    def __init__(self, norm, rawmatrix, eigenfile, res):
+    def __init__(self, norm, rawmatrix, res, *, eigenfile=""):
         self.res = res
         if os.path.exists(rawmatrix):
             self.raw = loadDenseMatrix(rawmatrix)
-  #      else:
-#            print ("Warning: matrix file is not exist.")
         if os.path.exists(eigenfile):
             self.eigen = np.loadtxt(eigenfile)
-   #     else:
- #           print ("Warning: eigen file is not exist.")
         if norm == "RPM":
             self.raw = self.raw * 10000000 / np.nansum(self.raw)
-#            self.oe  = self.oe  * 10000000 / np.nansum(self.oe)
-        self.InsulationScore = MultiInsulationScore(self.getmatrix().values, 1000000, 100000, self.res)
+        self.InsulationScore = MultiInsulationScore(self.getmatrix().values,
+                                                    1000000, 100000, self.res)
 
     def getmatrix(self, *, isNonZero=False):
         if isNonZero == True:
