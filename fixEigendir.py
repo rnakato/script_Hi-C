@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import pearsonr
 
-def loadEigen(filename, refFlat, chr, res):
+def fixEigendir(filename, refFlat, chr, res):
    eigen = np.loadtxt(filename)
    gene = pd.read_csv(refFlat, delimiter='\t', header=None, usecols=[2,3,4,5]) # , index_col=0
 #   print(gene.iloc[1,:])
