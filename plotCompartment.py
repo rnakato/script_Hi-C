@@ -87,13 +87,7 @@ def main():
     plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_eigen, colspan=4)
     plt.plot(samples[0].getEigen())
     plt.xlim([s,e])
-    plt.tick_params(
-        axis='x',          # changes apply to the x-axis
-        which='both',      # both major and minor ticks are affected
-        bottom=False,      # ticks along the bottom edge are off
-        top=False,         # ticks along the top edge are off
-        labelbottom=False  # labels along the bottom edge are off
-    )
+    xtickoff(plt)
 
     nrow_now += nrow_eigen
 
