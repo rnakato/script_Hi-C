@@ -22,6 +22,8 @@ def main():
     parser.add_argument("-r", "--resolution", help="resolution", type=int, default=25000)
     parser.add_argument("-s", "--start", help="start bp", type=int, default=0)
     parser.add_argument("-e", "--end", help="end bp", type=int, default=1000000)
+    parser.add_argument("--vmax", help="max value of color bar", type=int, default=2)
+    parser.add_argument("--vmin", help="min value of color bar", type=int, default=-2)
 
     args = parser.parse_args()
 #    print(args)
@@ -42,24 +44,17 @@ def main():
     figend = args.end
     s = int(figstart / resolution)
     e = int(figend   / resolution)
+    vmax = args.vmax
+    vmin = args.vmin
 
     print (chr)
     print (resolution)
     samples = []
     for dir in dirs:
         observed = dir + "/matrix/intrachromosomal/" + str(resolution) + "/observed."  + type + "." + chr + ".matrix.gz"
-        #        oe = dir + "/matrix/intrachromosomal/" + str(resolution) + "/oe."  + type + "." + chr + ".matrix.gz"
-        #       eigen = dir + "/eigen/" + str(resolution) + "/gd_eigen."  + type + "." + chr + ".txt"
-        eigen = ""
-
-#        print (observed)
- #       print (oe)
-#        print (eigen)
-
-        samples.append(JuicerMatrix("RPM", observed, resolution, eigenfile=eigen))
+        samples.append(JuicerMatrix("RPM", observed, resolution))
 
     ### Plot
-
     smooth_median_filter = 3
     EnrichMatrices = make3dmatrixRatio(samples, smooth_median_filter)
 
@@ -71,12 +66,14 @@ def main():
         plt.subplot2grid((nsample*2, 4), (i*2,0), rowspan=2, colspan=4)
         dst = ndimage.rotate(sample[s:e,s:e], 45,
                              order=0, reshape=True, prefilter=False, cval=0)
-        img = plt.imshow(dst, clim=(-2, 2), cmap=generate_cmap(['#1310cc', '#FFFFFF', '#d10a3f']),
+        img = plt.imshow(dst, clim=(vmin, vmax),
+                         cmap=generate_cmap(['#1310cc', '#FFFFFF', '#d10a3f']),
                          interpolation="nearest", aspect='auto')
         plt.ylim(int(dst.shape[0]/2)+1,0)
         plt.title(labels[i+1])
         #        pltxticks(0, (e-s)*1.41, figstart, figend, 10)
         xtickoff(plt)
+        plt.colorbar()
 
     plt.tight_layout()
     plt.savefig(args.output + ".pdf")

@@ -21,6 +21,8 @@ def main():
     parser.add_argument("-r", "--resolution", help="resolution", type=int, default=25000)
     parser.add_argument("-s", "--start", help="start bp", type=int, default=0)
     parser.add_argument("-e", "--end", help="end bp", type=int, default=1000000)
+    parser.add_argument("--vmax", help="max value of color bar", type=int, default=50)
+    parser.add_argument("--vmin", help="min value of color bar", type=int, default=0)
 
     args = parser.parse_args()
 #    print(args)
@@ -41,6 +43,8 @@ def main():
     figend = args.end
     s = int(figstart / resolution)
     e = int(figend   / resolution)
+    vmax = args.vmax
+    vmin = args.vmin
 
     print (chr)
     print (resolution)
@@ -51,7 +55,7 @@ def main():
  #       print (observed)
 #        print (eigen)
 
-        samples.append(JuicerMatrix("RPM", observed, resolution, eigenfile=eigen))
+        samples.append(JuicerMatrix("RPE", observed, resolution, eigenfile=eigen))
 
     nrow_heatmap = 3
     nrow_eigen = 1
@@ -59,10 +63,10 @@ def main():
 
     ### Plot
     plt.figure(figsize=(10,6))
-    nrow = nrow_heatmap + nrow_eigen + 4
+    nrow = nrow_heatmap + nrow_eigen + 2
 
     # Hi-C Map
-    plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_heatmap, colspan=4)
+    plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_heatmap, colspan=5)
 
     tadfile = dirs[0] + "/contact_domain/" + str(resolution) + "_blocks.bedpe"
     print(tadfile)
@@ -74,7 +78,8 @@ def main():
     drawHeatmapTriangle(plt, samples[0].getmatrix(), resolution,
                         figstart=figstart, figend=figend,
                         tads=tads, loops=loops,
-                        vmax=50, label=labels[0], xticks=False)
+                        vmax=vmax, vmin=vmin,
+                        label=labels[0], xticks=False)
 
     nrow_now += nrow_heatmap
 

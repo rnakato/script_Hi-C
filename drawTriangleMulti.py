@@ -24,6 +24,8 @@ def main():
     parser.add_argument("-r", "--resolution", help="resolution", type=int, default=25000)
     parser.add_argument("-s", "--start", help="start bp", type=int, default=0)
     parser.add_argument("-e", "--end", help="end bp", type=int, default=1000000)
+    parser.add_argument("--vmax", help="max value of color bar", type=int, default=50)
+    parser.add_argument("--vmin", help="min value of color bar", type=int, default=0)
 
     args = parser.parse_args()
 #    print(args)
@@ -44,6 +46,11 @@ def main():
     figend = args.end
     s = int(figstart / resolution)
     e = int(figend   / resolution)
+    vmax = args.vmax
+    vmin = args.vmin
+    if (args.log):
+        vmax = np.log1p(vmax)
+        vmin = np.log1p(vmin)
 
     print (chr)
     print (resolution)
@@ -75,12 +82,14 @@ def main():
             drawHeatmapTriangle(plt, sample.getlog(), resolution,
                                 figstart=figstart, figend=figend,
                                 tads=tads, loops=loops,
-                                vmax=6, label=labels[i], xticks=False)
+                                vmax=vmax, vmin=vmin,
+                                label=labels[i], xticks=False)
         else:
             drawHeatmapTriangle(plt, sample.getmatrix(), resolution,
                                 figstart=figstart, figend=figend,
                                 tads=tads, loops=loops,
-                                vmax=50, label=labels[i], xticks=False)
+                                vmax=vmax, vmin=vmin,
+                                label=labels[i], xticks=False)
 
     plt.tight_layout()
     plt.savefig(args.output + ".pdf")

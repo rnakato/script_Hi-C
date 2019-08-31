@@ -4,7 +4,6 @@
 import argparse
 import matplotlib.pyplot as plt
 import seaborn as sns
-#from scipy import ndimage
 from HiCmodule import JuicerMatrix
 from DirectionalityIndex import getDirectionalityIndexOfMultiSample
 from generateCmap import *
@@ -26,6 +25,8 @@ def main():
     parser.add_argument("-r", "--resolution", help="resolution", type=int, default=25000)
     parser.add_argument("-s", "--start", help="start bp", type=int, default=0)
     parser.add_argument("-e", "--end", help="end bp", type=int, default=1000000)
+    parser.add_argument("--vmax", help="max value of color bar", type=int, default=50)
+    parser.add_argument("--vmin", help="min value of color bar", type=int, default=0)
 
     args = parser.parse_args()
 #    print(args)
@@ -48,6 +49,8 @@ def main():
     e = int(figend   / resolution)
     length = figend - figstart
     binnum = e-s
+    vmax = args.vmax
+    vmin = args.vmin
 
     print ("width: " + str(length) + ", " + str(binnum) + " bins.")
     if (length <= 0):
@@ -68,7 +71,7 @@ def main():
     plt.figure(figsize=(10,6))
 
     # Hi-C Map
-    plt.subplot2grid((7, 5), (0,0), rowspan=3, colspan=4)
+    plt.subplot2grid((7, 5), (0,0), rowspan=3, colspan=5)
     tadfile = dirs[0] + "/contact_domain/" + str(resolution) + "_blocks.bedpe"
     print(tadfile)
     tads = loadTADs(tadfile, chr[3:], start=figstart, end=figend)
@@ -79,7 +82,8 @@ def main():
     drawHeatmapTriangle(plt, samples[0].getmatrix(), resolution,
                         figstart=figstart, figend=figend,
                         tads=tads, loops=loops,
-                        vmax=50, label=labels[0], xticks=False)
+                        vmax=vmax, vmin=vmin,
+                        label=labels[0], xticks=False)
 
     # Compartment
     plt.subplot2grid((7, 5), (3,0), rowspan=1, colspan=4)

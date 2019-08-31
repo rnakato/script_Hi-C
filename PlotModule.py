@@ -62,6 +62,7 @@ def drawHeatmapTriangle(plt, matrix, resolution, *, tads="", loops="",
                          order=0, reshape=True, prefilter=False, cval=0)
     plt.imshow(dst, clim=(vmin, vmax), cmap=generate_cmap(['#FFFFFF', '#d10a3f']),
                interpolation="nearest", aspect='auto')
+    plt.colorbar()
 
     ynum = dst.shape[0]/2
     if (isinstance(tads, pd.DataFrame)):
