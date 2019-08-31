@@ -52,7 +52,8 @@ def drawHeatmapSquare(plt, matrix, resolution, *, tads="", figstart=0, figend=0,
     else:
         xtickoff(plt)
 
-def drawHeatmapTriangle(plt, matrix, resolution, *, tads="", figstart=0, figend=0,
+def drawHeatmapTriangle(plt, matrix, resolution, *, tads="", loops="",
+                        figstart=0, figend=0,
                         vmin=0, vmax=50, label="", xticks=True):
     s = int(figstart / resolution)
     e = int(figend   / resolution)
@@ -65,16 +66,33 @@ def drawHeatmapTriangle(plt, matrix, resolution, *, tads="", figstart=0, figend=
     ynum = dst.shape[0]/2
     if (isinstance(tads, pd.DataFrame)):
         for tad in tads.itertuples(name=None):
-            x1 = int(tad[2])/resolution - s
-            x2 = int(tad[3])/resolution - s
+            x1 = tad[2]/resolution - s
+            x2 = tad[3]/resolution - s
             x1 *= 1.41
             x2 *= 1.41
             if (x1 >0):
-                xmed = (x1 + min([x2, e]))/2
-                plt.plot([x1, min([xmed, x2])],[ynum, ynum-(xmed-x1)], color='k', linestyle='dashed', linewidth=0.6)
-            if (x2 < e):
+                xmed = (x1 + min([x2, (e-s)*1.41]))/2
+                plt.plot([x1, min([xmed, x2])],[ynum, ynum-(xmed-x1)],
+                         color='k', linestyle='dashed', linewidth=0.6)
+            if (x2 < (e-s)*1.41):
                 xmed = (max([x1, 0]) + x2) /2
-                plt.plot([x2, xmed],[ynum, ynum-(x2-xmed)], color='k', linestyle='dashed', linewidth=0.6)
+                plt.plot([x2, xmed],[ynum, ynum-(x2-xmed)],
+                         color='k', linestyle='dashed', linewidth=0.6)
+
+    if (isinstance(loops, pd.DataFrame)):
+        for loop in loops.itertuples(name=None):
+            x1 = (loop[2] + loop[3])/2/resolution - s
+            x2 = (loop[5] + loop[6])/2/resolution - s
+            x1 *= 1.41
+            x2 *= 1.41
+            if (x1 >0):
+                xmed = (x1 + min([x2, (e-s)*1.41]))/2
+                plt.plot([x1, min([xmed, x2])],[ynum, ynum-(xmed-x1)],
+                         color='b', linestyle='dashed', linewidth=0.5)
+            if (x2 < (e-s)*1.41):
+                xmed = (max([x1, 0]) + x2) /2
+                plt.plot([x2, xmed],[ynum, ynum-(x2-xmed)],
+                         color='b', linestyle='dashed', linewidth=0.6)
 
     plt.ylim(ynum,0)
     if (label != ""): plt.title(label)

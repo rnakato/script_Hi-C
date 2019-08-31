@@ -7,7 +7,7 @@ import seaborn as sns
 from HiCmodule import JuicerMatrix
 from InsulationScore import getInsulationScoreOfMultiSample
 from generateCmap import *
-from loadData import loadTADs
+from loadData import *
 from PlotModule import *
 
 #import pdb
@@ -66,23 +66,21 @@ def main():
         tadfile = dirs[i] + "/contact_domain/" + str(resolution) + "_blocks.bedpe"
         print(tadfile)
         tads = loadTADs(tadfile, chr[3:], start=figstart, end=figend)
+        loopfile = dirs[i] + "/loops/merged_loops.bedpe"
+        print(loopfile)
+        loops = loadloops(loopfile, chr[3:], start=figstart, end=figend)
         # Hi-C Map
         plt.subplot2grid((nsample*2, 4), (i*2,0), rowspan=2, colspan=4)
         if (args.log):
             drawHeatmapTriangle(plt, sample.getlog(), resolution,
-                                figstart=figstart, figend=figend, tads=tads,
+                                figstart=figstart, figend=figend,
+                                tads=tads, loops=loops,
                                 vmax=6, label=labels[i], xticks=False)
         else:
             drawHeatmapTriangle(plt, sample.getmatrix(), resolution,
-                                figstart=figstart, figend=figend, tads=tads,
+                                figstart=figstart, figend=figend,
+                                tads=tads, loops=loops,
                                 vmax=50, label=labels[i], xticks=False)
-#        dst = ndimage.rotate(df.iloc[s:e,s:e], 45,
-#                             order=0, reshape=True, prefilter=False, cval=0)
-#        img = plt.imshow(dst, clim=(0, valmax), cmap=generate_cmap(['#FFFFFF', '#d10a3f']),
-#                         interpolation="nearest", aspect='auto')
-#        plt.ylim(int(dst.shape[0]/2)+1,0)
-#        plt.title(labels[i])
-        #        pltxticks(0, (e-s)*1.41, figstart, figend, 10)
 
     plt.tight_layout()
     plt.savefig(args.output + ".pdf")

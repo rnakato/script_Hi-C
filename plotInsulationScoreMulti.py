@@ -8,7 +8,7 @@ from HiCmodule import JuicerMatrix
 from InsulationScore import getInsulationScoreOfMultiSample
 from generateCmap import *
 from PlotModule import *
-from loadData import loadTADs
+from loadData import *
 
 #import pdb
 
@@ -73,11 +73,14 @@ def main():
     tadfile = dirs[0] + "/contact_domain/" + str(resolution) + "_blocks.bedpe"
     print(tadfile)
     tads = loadTADs(tadfile, chr[3:], start=figstart, end=figend)
+    loopfile = dirs[0] + "/loops/merged_loops.bedpe"
+    print(loopfile)
+    loops = loadloops(loopfile, chr[3:], start=figstart, end=figend)
 
     drawHeatmapTriangle(plt, samples[0].getmatrix(), resolution,
-                      figstart=figstart, figend=figend, tads=tads,
-                      vmax=50, label=labels[0], xticks=False)
-
+                        figstart=figstart, figend=figend,
+                        tads=tads, loops=loops,
+                        vmax=50, label=labels[0], xticks=False)
 
     nrow_now += nrow_heatmap
 
