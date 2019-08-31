@@ -1,7 +1,8 @@
 # script_Hi-C
 scripts for Hi-C analysis
 
-#### distance_vs_count.Juicer
+## QC
+### distance_vs_count.Juicer
 Count genomic distance of read pairs in the input file (supposing align/merged_nodups.txt.gz in Juicer output.)
 
 Usage: 
@@ -11,7 +12,8 @@ Usage:
             <winsize>: window size (default: 10000)
             <MAPQ>:    MAPQ threshold (default: 30)
 
-#### convert_JuicerDump_to_dense.py
+## Data generation
+### convert_JuicerDump_to_dense.py
 Convert interaction frequency file dumped by Juicer to dense matrix
 
 Usage: 
@@ -27,7 +29,30 @@ Example:
         chrX \
         25000
 
-#### plotHiCMatrix.py
+
+### makeMatrix_intra.sh
+Generate dense matrix from .hic for each chromosome
+
+Usage:
+
+     makeMatrix_intra.sh <normalize type (e.g. KR)> <output directory> <.hic> <resolution> <build (r.g., hg38)>
+
+### makeEigen.sh
+Generate eigenvector file in that +- of the value is adjusted by the number of genes
+
+Usage:
+
+     makeEigen.sh <normalize type (e.g. KR)> <output directory> <.hic> <resolution> <build (r.g., hg38)>
+
+### makeInslationScore.sh
+Calculate insulation score file from dense matrix data
+
+Usage:
+
+     makeInslationScore.sh <normalize type (e.g. KR)> <output directory> <resolution> <build (r.g., hg38)>
+
+## Visualization
+### plotHiCMatrix.py
 Plot Hi-C intercation heatmap from Juicer matrix
 
 Usage:
@@ -37,9 +62,8 @@ Usage:
 Example: 
 
     plotHiCMatrix.py WT/intrachromosomal/25000/observed.KR.chr7.matrix.gz chr7/WT_chr7_25000000-31000000.png 25000000 31000000 WT
-
                                  
-#### plotInsulationScore.py
+### plotInsulationScore.py
 Plot insulation score from Juicer matrix
 
 Usage:
@@ -48,7 +72,7 @@ Usage:
                                  [--sizex SIZEX] [--sizey SIZEY]
                                  matrix output resolution
 
-#### plotMultiScaleInsulationScore.py
+### plotMultiScaleInsulationScore.py
 Plot multi-scale insulation scores from Juicer matrix
 
 Usage:
@@ -57,23 +81,30 @@ Usage:
                                            [--sizex SIZEX] [--sizey SIZEY]
                                            matrix output resolution
 
-#### makeMatrix_intra.sh
-Generate dense matrix from .hic for each chromosome
+
+### plotDirectionalyIndexMulti.py
+Plot multi-scale insulation scores from Juicer matrix
 
 Usage:
 
-     makeMatrix_intra.sh <normalize type (e.g. KR)> <output directory> <.hic> <resolution> <build (r.g., hg38)>
-
-#### makeEigen.sh
-Generate eigenvector file in that +- of the value is adjusted by the number of genes
-
-Usage:
-
-     makeEigen.sh <normalize type (e.g. KR)> <output directory> <.hic> <resolution> <build (r.g., hg38)>
-
-#### makeInslationScore.sh
-Calculate insulation score file from dense matrix data
+     plotDirectionalyIndexMulti.py $samples $head.DI $region --type $type
+### plotInsulationScoreMulti.py
+Plot multi-scale insulation scores from Juicer matrix
 
 Usage:
 
-     makeInslationScore.sh <normalize type (e.g. KR)> <output directory> <resolution> <build (r.g., hg38)>
+     plotInsulationScoreMulti.py $samples $head.MultiIS $region --type $type --multi
+     plotInsulationScoreMulti.py $samples $head.singleIS $region --type $type
+### drawTriangleMulti.py
+Plot multi-scale insulation scores from Juicer matrix
+
+Usage:
+
+     drawTriangleMulti.py $samples $head.Heatmap $region --type $type
+     drawTriangleMulti.py $samples $head.Heatmaplog $region --type $type --log
+### drawTriangleRatioMulti.py 
+Plot multi-scale insulation scores from Juicer matrix
+
+Usage:
+
+     drawTriangleRatioMulti.py $samples $head.HeatmapRatio $region --type $type
