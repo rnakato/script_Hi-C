@@ -13,6 +13,13 @@ def pltxticks(start, end, figstart, figend, nmem):
     xval = (figstart + np.arange(nmem+1)*val)/Mega
     plt.xticks(x, xval)
 
+def pltyticks(start, end, figstart, figend, nmem):
+    mem = int((end - start)/nmem)
+    x = start + np.arange(nmem+1) * mem
+    val = (figend - figstart) / nmem
+    xval = (figstart + np.arange(nmem+1)*val)/Mega
+    plt.yticks(x, xval)
+
 def axxticks(ax, start, end, figstart, figend, nmem):
     mem = int((end - start)/nmem)
     x = start + np.arange(nmem+1) * mem
@@ -96,9 +103,11 @@ def drawHeatmapTriangle(plt, matrix, resolution, *, tads="", loops="",
                          color='b', linestyle='dashed', linewidth=0.6)
 
     if (distancemax > 0):
-        plt.ylim(ynum, max(0, ynum - distancemax/resolution))
+        ystart = max(0, ynum - distancemax/resolution)
     else:
-        plt.ylim(ynum, 0)
+        ystart = 0
+    plt.ylim(ynum, ystart)
+    pltyticks(ynum, ystart, 0, min(distancemax, (figend - figstart)), 5)
 
     if (label != ""): plt.title(label)
     if (xticks):
