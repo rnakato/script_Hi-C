@@ -5,26 +5,35 @@ import argparse
 import matplotlib.pyplot as plt
 import seaborn as sns
 from HiCmodule import JuicerMatrix
+from DirectionalityIndex import getDirectionalityIndexOfMultiSample
 from InsulationScore import getInsulationScoreOfMultiSample
 from generateCmap import *
-from PlotModule import *
 from loadData import *
+from PlotModule import *
+#import pysnooper
 
 #import pdb
 
+#@pysnooper.snoop()
 def main():
     parser = argparse.ArgumentParser()
     tp = lambda x:list(map(str, x.split(':')))
-    parser.add_argument("input", help="<Input direcoty>:<label>", type=tp, nargs='*')
+    parser.add_argument("input",  help="<Input direcoty>:<label>", type=tp, nargs='*')
     parser.add_argument("output", help="Output prefix", type=str)
-    parser.add_argument("chr", help="chromosome", type=str)
+    parser.add_argument("chr",    help="chromosome", type=str)
     parser.add_argument("--type", help="normalize type", type=str, default="KR")
+    parser.add_argument("--distance", help="distance for DI", type=int, default=500000)
     parser.add_argument("-r", "--resolution", help="resolution", type=int, default=25000)
     parser.add_argument("-s", "--start", help="start bp", type=int, default=0)
-    parser.add_argument("-e", "--end", help="end bp", type=int, default=1000000)
-    parser.add_argument("--multi", help="plot MultiInsulation Score", action='store_true')
+    parser.add_argument("-e", "--end",   help="end bp", type=int, default=1000000)
+    parser.add_argument("--multi",       help="plot MultiInsulation Score", action='store_true')
+    parser.add_argument("--compartment", help="plot Compartment (eigen)", action='store_true')
+    parser.add_argument("--di",   help="plot Directionaly Index", action='store_true')
     parser.add_argument("--vmax", help="max value of color bar", type=int, default=50)
     parser.add_argument("--vmin", help="min value of color bar", type=int, default=0)
+    parser.add_argument("-d", "--vizdistancemax", help="max distance in heatmap", type=int, default=0)
+    parser.add_argument("--xsize", help="xsize for figure", type=int, default=10)
+#    parser.add_argument("--ysize", help="ysize (* times of samples)", type=int, default=3)
 
     args = parser.parse_args()
 #    print(args)
@@ -45,18 +54,22 @@ def main():
     figend = args.end
     s = int(figstart / resolution)
     e = int(figend   / resolution)
+    length = figend - figstart
+    binnum = e-s
     vmax = args.vmax
     vmin = args.vmin
 
+    print ("width: " + str(length) + ", " + str(binnum) + " bins.")
+    if (length <= 0):
+        print ("Error: end < start.")
+        exit(1)
     print (chr)
     print (resolution)
+
     samples = []
     for dir in dirs:
         observed = dir + "/matrix/intrachromosomal/" + str(resolution) + "/observed."  + type + "." + chr + ".matrix.gz"
         eigen = dir + "/eigen/" + str(resolution) + "/gd_eigen."  + type + "." + chr + ".txt"
- #       print (observed)
-#        print (eigen)
-
         samples.append(JuicerMatrix("RPM", observed, resolution, eigenfile=eigen))
 
     nrow_heatmap = 3
@@ -65,10 +78,10 @@ def main():
 
     ### Plot
     if (args.multi):
-        plt.figure(figsize=(10, 14))
+        plt.figure(figsize=(args.xsize, 6 + len(samples)))
         nrow = nrow_heatmap + nrow_eigen + len(samples)
     else:
-        plt.figure(figsize=(10,6))
+        plt.figure(figsize=(args.xsize, 6))
         nrow = nrow_heatmap + nrow_eigen + 4
 
     # Hi-C Map
@@ -84,7 +97,7 @@ def main():
     drawHeatmapTriangle(plt, samples[0].getmatrix(), resolution,
                         figstart=figstart, figend=figend,
                         tads=tads, loops=loops,
-                        vmax=vmax, vmin=vmin,
+                        vmax=vmax, vmin=vmin, distancemax=args.vizdistancemax,
                         label=labels[0], xticks=False)
 
     nrow_now += nrow_heatmap
@@ -93,18 +106,43 @@ def main():
     plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_eigen, colspan=4)
     plt.plot(samples[0].getEigen())
     plt.xlim([s,e])
-    plt.tick_params(
-        axis='x',          # changes apply to the x-axis
-        which='both',      # both major and minor ticks are affected
-        bottom=False,      # ticks along the bottom edge are off
-        top=False,         # ticks along the top edge are off
-        labelbottom=False  # labels along the bottom edge are off
-    )
+    xtickoff(plt)
 
     nrow_now += nrow_eigen
 
-    # Insulation score
-    if (args.multi):
+    if (args.di):  # Directionaly Index
+        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=3, colspan=5)
+        vDI = getDirectionalityIndexOfMultiSample(samples, labels, distance=args.distance)
+        plt.imshow(vDI.iloc[:,s:e],
+                   clim=(-1000, 1000),
+                   cmap=generate_cmap(['#1310cc', '#FFFFFF', '#d10a3f']),
+                   aspect="auto")
+        plt.colorbar()
+        pltxticks(0, e-s, figstart, figend, 10)
+        plt.yticks(np.arange(len(labels)), labels)
+
+    elif (args.compartment): # Compartment
+        for i, sample in enumerate(samples):
+            if i==0: Matrix = sample.getEigen()
+            else:    Matrix = np.vstack((Matrix, sample.getEigen()))
+
+        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=5)
+        plt.imshow(Matrix[:,s:e],
+                   clim=(-0.05, 0.05),
+                   cmap=generate_cmap(['#1310cc', '#FFFFFF', '#d10a3f']),
+                   aspect="auto")
+        plt.colorbar()
+        plt.yticks(np.arange(len(labels)), labels)
+        xtickoff(plt)
+
+        nrow_now += 2
+        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=4)
+        for i, sample in enumerate(samples):
+            plt.plot(sample.getEigen(), label=labels[i])
+        plt.xlim([s, e])
+        pltxticks(s, e, figstart, figend, 10)
+
+    elif (args.multi):     # Multi Insulation score
         for i, sample in enumerate(samples):
             plt.subplot2grid((nrow, 5), (i + nrow_now, 0), rowspan=1, colspan=5)
             MI = sample.getMultiInsulationScore()
@@ -120,7 +158,8 @@ def main():
 #            pltxticks(s, e, figstart, figend, 10)
             plt.colorbar()
         plt.tight_layout()
-    else:
+
+    else:                  # Single Insulation score
         Matrix = getInsulationScoreOfMultiSample(samples, labels)
         plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=5)
         plt.imshow(Matrix.T.iloc[:,s:e],

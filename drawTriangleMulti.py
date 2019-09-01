@@ -26,6 +26,9 @@ def main():
     parser.add_argument("-e", "--end", help="end bp", type=int, default=1000000)
     parser.add_argument("--vmax", help="max value of color bar", type=int, default=50)
     parser.add_argument("--vmin", help="min value of color bar", type=int, default=0)
+    parser.add_argument("--vizdistancemax", help="max distance in heatmap", type=int, default=0)
+    parser.add_argument("--xsize", help="xsize for figure", type=int, default=10)
+    parser.add_argument("--ysize", help="ysize (* times of samples)", type=int, default=3)
 
     args = parser.parse_args()
 #    print(args)
@@ -57,17 +60,12 @@ def main():
     samples = []
     for dir in dirs:
         observed = dir + "/matrix/intrachromosomal/" + str(resolution) + "/observed."  + type + "." + chr + ".matrix.gz"
-#        oe = dir + "/matrix/intrachromosomal/" + str(resolution) + "/oe."  + type + "." + chr + ".matrix.gz"
         eigen = dir + "/eigen/" + str(resolution) + "/gd_eigen."  + type + "." + chr + ".txt"
-        #        print (observed)
-        #print (eigen)
-
         samples.append(JuicerMatrix("RPM", observed, resolution, eigenfile=eigen))
 
     ### Plot
-
     nsample = len(samples)
-    plt.figure(figsize=(10, nsample*3))
+    plt.figure(figsize=(args.xsize, nsample*args.ysize))
 
     for i, sample in enumerate(samples):
         tadfile = dirs[i] + "/contact_domain/" + str(resolution) + "_blocks.bedpe"
@@ -82,13 +80,13 @@ def main():
             drawHeatmapTriangle(plt, sample.getlog(), resolution,
                                 figstart=figstart, figend=figend,
                                 tads=tads, loops=loops,
-                                vmax=vmax, vmin=vmin,
+                                vmax=vmax, vmin=vmin, distancemax=args.vizdistancemax,
                                 label=labels[i], xticks=False)
         else:
             drawHeatmapTriangle(plt, sample.getmatrix(), resolution,
                                 figstart=figstart, figend=figend,
                                 tads=tads, loops=loops,
-                                vmax=vmax, vmin=vmin,
+                                vmax=vmax, vmin=vmin, distancemax=args.vizdistancemax,
                                 label=labels[i], xticks=False)
 
     plt.tight_layout()

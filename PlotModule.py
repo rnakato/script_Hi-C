@@ -53,7 +53,7 @@ def drawHeatmapSquare(plt, matrix, resolution, *, tads="", figstart=0, figend=0,
         xtickoff(plt)
 
 def drawHeatmapTriangle(plt, matrix, resolution, *, tads="", loops="",
-                        figstart=0, figend=0,
+                        figstart=0, figend=0, distancemax=0,
                         vmin=0, vmax=50, label="", xticks=True):
     s = int(figstart / resolution)
     e = int(figend   / resolution)
@@ -95,7 +95,11 @@ def drawHeatmapTriangle(plt, matrix, resolution, *, tads="", loops="",
                 plt.plot([x2, xmed],[ynum, ynum-(x2-xmed)],
                          color='b', linestyle='dashed', linewidth=0.6)
 
-    plt.ylim(ynum,0)
+    if (distancemax > 0):
+        plt.ylim(ynum, max(0, ynum - distancemax/resolution))
+    else:
+        plt.ylim(ynum, 0)
+
     if (label != ""): plt.title(label)
     if (xticks):
         pltxticks(0, (e-s)*1.41, figstart, figend, 10)
