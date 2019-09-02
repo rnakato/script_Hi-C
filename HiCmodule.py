@@ -31,6 +31,8 @@ class JuicerMatrix:
             exit(1)
         if os.path.exists(eigenfile):
             self.eigen = np.loadtxt(eigenfile)
+        else:
+            self.eigen = np.zeros(self.raw.shape[0])
         if norm == "RPM":
             self.raw = self.raw * 10000000 / np.nansum(self.raw)
         self.InsulationScore = MultiInsulationScore(self.getmatrix().values,

@@ -69,7 +69,7 @@ def main():
     samples = []
     for dir in dirs:
         observed = dir + "/Matrix/intrachromosomal/" + str(resolution) + "/observed."  + type + "." + chr + ".matrix.gz"
-        eigen = dir + "/eigen/" + str(resolution) + "/gd_eigen."  + type + "." + chr + ".txt"
+        eigen = dir + "/Eigen/" + str(resolution) + "/gd_eigen."  + type + "." + chr + ".txt"
         samples.append(JuicerMatrix("RPM", observed, resolution, eigenfile=eigen))
 
     nrow_heatmap = 3
@@ -101,7 +101,6 @@ def main():
                         label=labels[0], xticks=False)
 
     nrow_now += nrow_heatmap
-
     # Compartment
     plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_eigen, colspan=4)
     plt.plot(samples[0].getEigen())
