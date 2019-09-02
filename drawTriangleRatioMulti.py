@@ -51,7 +51,7 @@ def main():
     print (resolution)
     samples = []
     for dir in dirs:
-        observed = dir + "/matrix/intrachromosomal/" + str(resolution) + "/observed."  + type + "." + chr + ".matrix.gz"
+        observed = dir + "/Matrix/intrachromosomal/" + str(resolution) + "/observed."  + type + "." + chr + ".matrix.gz"
         samples.append(JuicerMatrix("RPM", observed, resolution))
 
     ### Plot

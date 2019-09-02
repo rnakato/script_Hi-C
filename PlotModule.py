@@ -104,10 +104,12 @@ def drawHeatmapTriangle(plt, matrix, resolution, *, tads="", loops="",
 
     if (distancemax > 0):
         ystart = max(0, ynum - distancemax/resolution)
+        plt.ylim(ynum, ystart)
+        pltyticks(ynum, ystart, 0, min(distancemax, (figend - figstart)), 5)
     else:
         ystart = 0
-    plt.ylim(ynum, ystart)
-    pltyticks(ynum, ystart, 0, min(distancemax, (figend - figstart)), 5)
+        plt.ylim(ynum, ystart)
+        pltyticks(ynum, ystart, 0, figend - figstart, 5)
 
     if (label != ""): plt.title(label)
     if (xticks):

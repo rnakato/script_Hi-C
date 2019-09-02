@@ -26,6 +26,9 @@ class JuicerMatrix:
         self.res = res
         if os.path.exists(rawmatrix):
             self.raw = loadDenseMatrix(rawmatrix)
+        else:
+            print ("Error: " + rawmatrix + " does not exist.")
+            exit(1)
         if os.path.exists(eigenfile):
             self.eigen = np.loadtxt(eigenfile)
         if norm == "RPM":

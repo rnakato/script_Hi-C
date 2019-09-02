@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 
 def loadDenseMatrix(filename):
@@ -6,18 +7,24 @@ def loadDenseMatrix(filename):
     return data
 
 def loadTADs(filename, chr, *, start=0, end=99999999999):
-    tads = pd.read_csv(filename, delimiter='\t', usecols=['chr1','x1','x2'])
-    tads = tads[tads.chr1 == chr]
-    tads = tads[tads.x1 < end]
-    tads = tads[tads.x2 >= start]
+    if os.path.exists(filename):
+        tads = pd.read_csv(filename, delimiter='\t', usecols=['chr1','x1','x2'])
+        tads = tads[tads.chr1 == chr]
+        tads = tads[tads.x1 < end]
+        tads = tads[tads.x2 >= start]
+    else:
+        tads = ""
     return tads
 
 def loadloops(filename, chr, *, start=0, end=99999999999):
-    loops = pd.read_csv(filename, delimiter='\t', usecols=['chr1','x1','x2','chr2','y1','y2'])
-    loops = loops[loops.chr1 == chr]
-    loops = loops[loops.chr2 == chr]
-    loops = loops[loops.x2 < end]
-    loops = loops[loops.y1 >= start]
+    if os.path.exists(filename):
+        loops = pd.read_csv(filename, delimiter='\t', usecols=['chr1','x1','x2','chr2','y1','y2'])
+        loops = loops[loops.chr1 == chr]
+        loops = loops[loops.chr2 == chr]
+        loops = loops[loops.x2 < end]
+        loops = loops[loops.y1 >= start]
+    else:
+        loops = ""
     return loops
 
 def readBedGraph(file, chr, *, start=-1, end=-1):

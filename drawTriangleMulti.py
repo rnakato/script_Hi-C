@@ -20,18 +20,18 @@ def main():
     parser.add_argument("chr", help="chromosome", type=str)
     parser.add_argument("--log", help="logged count", action='store_true')
     parser.add_argument("--type", help="normalize type", type=str, default="KR")
-    parser.add_argument("-d", "--distance", help="distance for DI", type=int, default=500000)
+    parser.add_argument("--distance", help="distance for DI", type=int, default=500000)
     parser.add_argument("-r", "--resolution", help="resolution", type=int, default=25000)
     parser.add_argument("-s", "--start", help="start bp", type=int, default=0)
     parser.add_argument("-e", "--end", help="end bp", type=int, default=1000000)
     parser.add_argument("--vmax", help="max value of color bar", type=int, default=50)
     parser.add_argument("--vmin", help="min value of color bar", type=int, default=0)
-    parser.add_argument("--vizdistancemax", help="max distance in heatmap", type=int, default=0)
+    parser.add_argument("-d", "--vizdistancemax", help="max distance in heatmap", type=int, default=0)
     parser.add_argument("--xsize", help="xsize for figure", type=int, default=10)
     parser.add_argument("--ysize", help="ysize (* times of samples)", type=int, default=3)
 
     args = parser.parse_args()
-#    print(args)
+    print(args)
 
     dirs = []
     labels = []
@@ -59,7 +59,7 @@ def main():
     print (resolution)
     samples = []
     for dir in dirs:
-        observed = dir + "/matrix/intrachromosomal/" + str(resolution) + "/observed."  + type + "." + chr + ".matrix.gz"
+        observed = dir + "/Matrix/intrachromosomal/" + str(resolution) + "/observed."  + type + "." + chr + ".matrix.gz"
         eigen = dir + "/eigen/" + str(resolution) + "/gd_eigen."  + type + "." + chr + ".txt"
         samples.append(JuicerMatrix("RPM", observed, resolution, eigenfile=eigen))
 
@@ -81,13 +81,13 @@ def main():
                                 figstart=figstart, figend=figend,
                                 tads=tads, loops=loops,
                                 vmax=vmax, vmin=vmin, distancemax=args.vizdistancemax,
-                                label=labels[i], xticks=False)
+                                label=labels[i], xticks=True)
         else:
             drawHeatmapTriangle(plt, sample.getmatrix(), resolution,
                                 figstart=figstart, figend=figend,
                                 tads=tads, loops=loops,
                                 vmax=vmax, vmin=vmin, distancemax=args.vizdistancemax,
-                                label=labels[i], xticks=False)
+                                label=labels[i], xticks=True)
 
     plt.tight_layout()
     plt.savefig(args.output + ".pdf")
