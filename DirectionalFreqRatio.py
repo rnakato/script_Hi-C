@@ -1,7 +1,12 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import numpy as np
+import pandas as pd
+from scipy import ndimage
+import argparse
 
 def make3dmatrixRatio(samples, smoooth):
-    from scipy import ndimage
     n = len(samples)
     Ct = ndimage.median_filter(samples[0].getlog(isNonZero=False), smoooth)
     x, y = Ct.shape
@@ -42,3 +47,47 @@ class DirectionalFreqRatio:
 
     def getarraydiff(self):
         return self.arrayplus - self.arrayminus
+
+def output_DFR(args):
+    from HiCmodule import JuicerMatrix
+    resolution = args.resolution
+    samples = []
+    samples.append(JuicerMatrix("RPM", args.control, resolution))
+    samples.append(JuicerMatrix("RPM", args.input, resolution))
+
+    smooth_median_filter = 3
+    EnrichMatrices = make3dmatrixRatio(samples, smooth_median_filter)
+
+#    import pdb; pdb.set_trace()
+
+    dfr = DirectionalFreqRatio(EnrichMatrices[0], resolution)
+    if (args.dfr_right == True):
+        array = dfr.getarrayplus()
+    elif (args.dfr_left == True):
+        array = dfr.getarrayminus()
+    else:
+        array = dfr.getarraydiff()
+
+    df = pd.DataFrame(array)
+    df.columns = ["DFR"]
+    df["chr"] = args.chr
+    df["start"] = np.arange(len(array)) * resolution
+    df["end"] = df["start"] + resolution
+    df = df.loc[:,["chr","start","end","DFR"]]
+
+    df.to_csv(args.output + ".bedGraph", sep="\t", header=False, index=False)
+#    np.savetxt(args.output, array, fmt="%0.6f")
+
+if(__name__ == '__main__'):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("input", help="Input matrix", type=str)
+    parser.add_argument("control", help="Control matrix", type=str)
+    parser.add_argument("output", help="Output prefix", type=str)
+    parser.add_argument("chr", help="chromosome", type=str)
+    parser.add_argument("resolution", help="Resolution of the input matrix", type=int)
+    parser.add_argument("--dfr_right",   help="(with --dfr) plot DirectionalFreqRatio (Right)", action='store_true')
+    parser.add_argument("--dfr_left",   help="(with --dfr) plot DirectionalFreqRatio (Left)", action='store_true')
+
+    args = parser.parse_args()
+    #print(args)
+    output_DFR(args)
