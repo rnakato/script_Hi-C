@@ -18,6 +18,7 @@ def plotDirectionalFreqRatio(plt, samples, resolution, figstart, figend, labels,
                              nrow, nrow_now, nrow_feature, args):
     s = int(figstart / resolution)
     e = int(figend   / resolution)
+
     smooth_median_filter = 3
     EnrichMatrices = make3dmatrixRatio(samples, smooth_median_filter)
     for i, sample in enumerate(EnrichMatrices):
@@ -39,7 +40,7 @@ def plotDirectionalFreqRatio(plt, samples, resolution, figstart, figend, labels,
     xtickoff(plt)
 
     nrow_now += nrow_feature
-    plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=4)
+    plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=3, colspan=4)
     for i, sample in enumerate(Matrix):
         plt.plot(sample, label=labels[i+1])
         if (args.dfr_right == True):  plt.title("Right")
@@ -48,6 +49,24 @@ def plotDirectionalFreqRatio(plt, samples, resolution, figstart, figend, labels,
 
     plt.xlim([s, e])
     pltxticks(s, e, figstart, figend, 10)
+
+    nrow_now += 3
+
+    from hmmlearn import hmm
+    import collections
+    Matrix[np.isnan(Matrix)] = 0
+    plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=3, colspan=4)
+    ncluster = 6
+    model = hmm.GaussianHMM(n_components=ncluster, n_iter=10000,
+                            covariance_type="diag").fit(Matrix.T)
+    predicted = model.predict(Matrix.T)
+#    collections.Counter(predicted.tolist())
+#    state = pd.DataFrame(predicted)
+    plt.plot(predicted)
+    plt.xlim([s, e])
+    pltxticks(s, e, figstart, figend, 10)
+
+    plt.tight_layout()
 
 #@pysnooper.snoop()
 def main():
@@ -70,7 +89,7 @@ def main():
     parser.add_argument("--vmax", help="max value of color bar", type=int, default=50)
     parser.add_argument("--vmin", help="min value of color bar", type=int, default=0)
     parser.add_argument("-d", "--vizdistancemax", help="max distance in heatmap", type=int, default=0)
-    parser.add_argument("--xsize", help="xsize for figure", type=int, default=10)
+    parser.add_argument("--xsize", help="xsize for figure", type=int, default=14)
 #    parser.add_argument("--ysize", help="ysize (* times of samples)", type=int, default=3)
 
     args = parser.parse_args()
@@ -121,7 +140,7 @@ def main():
     else:
         plt.figure(figsize=(args.xsize, 6))
         nrow_feature = int(len(samples)/3)
-        nrow = nrow_heatmap + nrow_eigen + nrow_feature + 2
+        nrow = nrow_heatmap + nrow_eigen + nrow_feature + 6
 
     # Hi-C Map
     plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_heatmap, colspan=5)
