@@ -35,15 +35,6 @@ def getDirectionalityIndexOfMultiSample(samples, labels, *, distance=1000000):
     Matrix.index = labels
     return Matrix
 
-#def getDirectionalityIndexOfMultiSample(samples, labels):
-#    for i, sample in enumerate(samples):
-#        if i==0: Matrix = sample.DI
-#        else:    Matrix = np.vstack((Matrix,sample.DI))
-#    Matrix = pd.DataFrame(Matrix)
-#    Matrix = Matrix.replace(-np.inf,np.nan).fillna(0)
-#    Matrix.index = labels
-#    return Matrix
-
 if(__name__ == '__main__'):
     parser = argparse.ArgumentParser()
     parser.add_argument("matrix", help="Input matrix", type=str)

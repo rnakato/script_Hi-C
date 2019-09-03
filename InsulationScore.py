@@ -6,8 +6,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
 from loadData import loadDenseMatrix
-from generateCmap import generate_cmap
-#import pdb; pdb.set_trace()
 
 def calceach(mat, squaresize, resolution):
     matsize = int(squaresize / resolution)

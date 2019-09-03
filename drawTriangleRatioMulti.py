@@ -10,6 +10,19 @@ from generateCmap import *
 from Cluster import make3dmatrixRatio
 from PlotModule import *
 
+def getDirectionalFreqRatio(mat, resolution, strand, *, distance=2000000):
+    arraysize = mat.shape[0]
+    array = np.zeros(arraysize)
+    nbin = int(distance/resolution)
+    for i in range(nbin, arraysize - nbin):
+        if (strand == "+"):
+            val = mat[i+1:i+nbin, i].mean()
+        else:
+            val = mat[i, i-nbin:i-1].mean()
+        array[i] = val
+
+    return array
+
 #import pdb
 def main():
     parser = argparse.ArgumentParser()
@@ -18,10 +31,10 @@ def main():
     parser.add_argument("output", help="Output prefix", type=str)
     parser.add_argument("chr", help="chromosome", type=str)
     parser.add_argument("--type", help="normalize type", type=str, default="KR")
-    parser.add_argument("-d", "--distance", help="distance for DI", type=int, default=500000)
     parser.add_argument("-r", "--resolution", help="resolution", type=int, default=25000)
     parser.add_argument("-s", "--start", help="start bp", type=int, default=0)
     parser.add_argument("-e", "--end", help="end bp", type=int, default=1000000)
+    parser.add_argument("-d", "--vizdistancemax", help="max distance in heatmap", type=int, default=0)
     parser.add_argument("--vmax", help="max value of color bar", type=int, default=2)
     parser.add_argument("--vmin", help="min value of color bar", type=int, default=-2)
 
@@ -59,21 +72,27 @@ def main():
     EnrichMatrices = make3dmatrixRatio(samples, smooth_median_filter)
 
     nsample = len(samples) -1
-    plt.figure(figsize=(10, nsample*3))
+    plt.figure(figsize=(10, nsample*5))
 
     for i, sample in enumerate(EnrichMatrices):
         # Hi-C Map
-        plt.subplot2grid((nsample*2, 4), (i*2,0), rowspan=2, colspan=4)
-        dst = ndimage.rotate(sample[s:e,s:e], 45,
-                             order=0, reshape=True, prefilter=False, cval=0)
-        img = plt.imshow(dst, clim=(vmin, vmax),
-                         cmap=generate_cmap(['#1310cc', '#FFFFFF', '#d10a3f']),
-                         interpolation="nearest", aspect='auto')
-        plt.ylim(int(dst.shape[0]/2)+1,0)
-        plt.title(labels[i+1])
-        #        pltxticks(0, (e-s)*1.41, figstart, figend, 10)
-        xtickoff(plt)
-        plt.colorbar()
+        plt.subplot2grid((nsample*4, 5), (i*4,0), rowspan=2, colspan=5)
+        drawHeatmapTriangle(plt, sample, resolution,
+                            figstart=figstart, figend=figend, vmax=vmax, vmin=vmin,
+                            cmap=generate_cmap(['#1310cc', '#FFFFFF', '#d10a3f']),
+                            distancemax=args.vizdistancemax,
+                            label=labels[i+1], xticks=True)
+
+        DFRplus = getDirectionalFreqRatio(sample, resolution, "+")
+        DFRminus = getDirectionalFreqRatio(sample, resolution, "-")
+        plt.subplot2grid((nsample*4, 5), (i*4+2,0), rowspan=1, colspan=4)
+        plt.plot(DFRplus, label="Right")
+        plt.plot(DFRminus, label="Left")
+        plt.xlim([s,e])
+        plt.legend()
+        plt.subplot2grid((nsample*4, 5), (i*4+3,0), rowspan=1, colspan=4)
+        plt.bar(range(len(DFRplus)), DFRplus - DFRminus)
+        plt.xlim([s,e])
 
     plt.tight_layout()
     plt.savefig(args.output + ".pdf")

@@ -38,13 +38,18 @@ def xtickoff(plt):
     )
 
 def drawHeatmapSquare(plt, matrix, resolution, *, tads="", figstart=0, figend=0,
-                      vmin=0, vmax=50, label="", xticks=True):
+                      vmin=0, vmax=50, label="", xticks=True,
+                      cmap=generate_cmap(['#FFFFFF', '#d10a3f'])):
     s = int(figstart / resolution)
     e = int(figend   / resolution)
     if (e==0): e = matrix.shape[0]
-    plt.imshow(matrix.iloc[s:e,s:e], clim=(vmin, vmax),
-               cmap=generate_cmap(['#FFFFFF', '#d10a3f']),
-               interpolation="nearest", aspect='auto')
+
+    if (isinstance(matrix, pd.DataFrame)):
+        mat = matrix.iloc[s:e,s:e]
+    else:
+        mat = matrix[s:e,s:e]
+
+    plt.imshow(mat, clim=(vmin, vmax), cmap=cmap, interpolation="nearest", aspect='auto')
 
     if (isinstance(tads, pd.DataFrame)):
         for tad in tads.itertuples(name=None):
@@ -61,14 +66,19 @@ def drawHeatmapSquare(plt, matrix, resolution, *, tads="", figstart=0, figend=0,
 
 def drawHeatmapTriangle(plt, matrix, resolution, *, tads="", loops="",
                         figstart=0, figend=0, distancemax=0,
-                        vmin=0, vmax=50, label="", xticks=True):
+                        vmin=0, vmax=50, label="", xticks=True,
+                        cmap=generate_cmap(['#FFFFFF', '#d10a3f'])):
     s = int(figstart / resolution)
     e = int(figend   / resolution)
     if (e==0): e = matrix.shape[0]
-    dst = ndimage.rotate(matrix.iloc[s:e,s:e], 45,
-                         order=0, reshape=True, prefilter=False, cval=0)
-    plt.imshow(dst, clim=(vmin, vmax), cmap=generate_cmap(['#FFFFFF', '#d10a3f']),
-               interpolation="nearest", aspect='auto')
+
+    if (isinstance(matrix, pd.DataFrame)):
+        mat = matrix.iloc[s:e,s:e]
+    else:
+        mat = matrix[s:e,s:e]
+
+    dst = ndimage.rotate(mat, 45, order=0, reshape=True, prefilter=False, cval=0)
+    plt.imshow(dst, clim=(vmin, vmax), cmap=cmap, interpolation="nearest", aspect='auto')
     plt.colorbar()
 
     ynum = dst.shape[0]/2

@@ -20,7 +20,6 @@ def main():
     parser.add_argument("chr", help="chromosome", type=str)
     parser.add_argument("--log", help="logged count", action='store_true')
     parser.add_argument("--type", help="normalize type", type=str, default="KR")
-    parser.add_argument("--distance", help="distance for DI", type=int, default=500000)
     parser.add_argument("-r", "--resolution", help="resolution", type=int, default=25000)
     parser.add_argument("-s", "--start", help="start bp", type=int, default=0)
     parser.add_argument("-e", "--end", help="end bp", type=int, default=1000000)
@@ -31,7 +30,7 @@ def main():
     parser.add_argument("--ysize", help="ysize (* times of samples)", type=int, default=3)
 
     args = parser.parse_args()
-    print(args)
+#    print(args)
 
     dirs = []
     labels = []
