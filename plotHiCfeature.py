@@ -84,7 +84,8 @@ def main():
         nrow = nrow_heatmap + nrow_eigen + len(samples)
     else:
         plt.figure(figsize=(args.xsize, 6))
-        nrow = nrow_heatmap + nrow_eigen + 4
+        nrow_feature = int(len(samples)/3)
+        nrow = nrow_heatmap + nrow_eigen + nrow_feature + 2
 
     # Hi-C Map
     plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_heatmap, colspan=5)
@@ -119,7 +120,7 @@ def main():
             if i==0: Matrix = dfr.getarraydiff()
             else:    Matrix = np.vstack((Matrix, dfr.getarraydiff()))
 
-        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=5)
+        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_feature, colspan=5)
         plt.imshow(Matrix[:,s:e],
                    cmap=generate_cmap(['#1310cc', '#FFFFFF', '#d10a3f']),
                    aspect="auto")
@@ -127,7 +128,7 @@ def main():
         plt.yticks(np.arange(len(labels)-1), labels[1:len(labels)])
         xtickoff(plt)
 
-        nrow_now += 2
+        nrow_now += nrow_feature
         plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=4)
         for i, sample in enumerate(EnrichMatrices):
             dfr = DirectionalFreqRatio(sample, resolution)
@@ -135,7 +136,7 @@ def main():
         plt.xlim([s, e])
         pltxticks(s, e, figstart, figend, 10)
 
-    elif (args.di):  # Directionaly Index
+    elif (args.di):  # Directionality Index
         plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=3, colspan=5)
         vDI = getDirectionalityIndexOfMultiSample(samples, labels, distance=args.distance)
         plt.imshow(vDI.iloc[:,s:e],
@@ -151,7 +152,7 @@ def main():
             if i==0: Matrix = sample.getEigen()
             else:    Matrix = np.vstack((Matrix, sample.getEigen()))
 
-        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=5)
+        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_feature, colspan=5)
         plt.imshow(Matrix[:,s:e],
                    clim=(-0.05, 0.05),
                    cmap=generate_cmap(['#1310cc', '#FFFFFF', '#d10a3f']),
@@ -160,7 +161,7 @@ def main():
         plt.yticks(np.arange(len(labels)), labels)
         xtickoff(plt)
 
-        nrow_now += 2
+        nrow_now += nrow_feature
         plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=4)
         for i, sample in enumerate(samples):
             plt.plot(sample.getEigen(), label=labels[i])
@@ -186,7 +187,7 @@ def main():
 
     else:                  # Single Insulation score
         Matrix = getInsulationScoreOfMultiSample(samples, labels)
-        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=5)
+        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_feature, colspan=5)
         plt.imshow(Matrix.T.iloc[:,s:e],
                    clim=(0.4, 1.0),
                    cmap=generate_cmap(['#d10a3f', '#FFFFFF', '#1310cc']),
@@ -195,7 +196,7 @@ def main():
         pltxticks(0, e-s, figstart, figend, 10)
         plt.yticks(np.arange(len(labels)), labels)
 
-        nrow_now += 2
+        nrow_now += nrow_feature
 
         plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=4)
         for i in range(len(samples)):
