@@ -82,6 +82,7 @@ def main():
         diff = dfr.getarraydiff()
         plt.bar(range(len(diff)), diff)
         plt.xlim([s,e])
+        plt.title("Right - Left")
 
     plt.tight_layout()
     plt.savefig(args.output + ".pdf")

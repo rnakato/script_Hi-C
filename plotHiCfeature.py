@@ -14,6 +14,41 @@ from DirectionalFreqRatio import *
 #import pysnooper
 
 #import pdb
+def plotDirectionalFreqRatio(plt, samples, resolution, figstart, figend, labels,
+                             nrow, nrow_now, nrow_feature, args):
+    s = int(figstart / resolution)
+    e = int(figend   / resolution)
+    smooth_median_filter = 3
+    EnrichMatrices = make3dmatrixRatio(samples, smooth_median_filter)
+    for i, sample in enumerate(EnrichMatrices):
+        dfr = DirectionalFreqRatio(sample, resolution)
+        if (args.dfr_right == True):
+            array = dfr.getarrayplus()
+        elif (args.dfr_left == True):
+            array = dfr.getarrayminus()
+        else:
+            array = dfr.getarraydiff()
+
+        if i==0: Matrix = array
+        else:    Matrix = np.vstack((Matrix, array))
+
+    plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_feature, colspan=5)
+    plt.imshow(Matrix[:,s:e], cmap=generate_cmap(['#1310cc', '#FFFFFF', '#d10a3f']), aspect="auto")
+    plt.colorbar()
+    plt.yticks(np.arange(len(labels)-1), labels[1:len(labels)])
+    xtickoff(plt)
+
+    nrow_now += nrow_feature
+    plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=4)
+    for i, sample in enumerate(Matrix):
+        plt.plot(sample, label=labels[i+1])
+        if (args.dfr_right == True):  plt.title("Right")
+        elif (args.dfr_left == True): plt.title("Left")
+        else:  plt.title("Right - Left")
+
+    plt.xlim([s, e])
+    pltxticks(s, e, figstart, figend, 10)
+    plt.tight_layout()
 
 #@pysnooper.snoop()
 def main():
@@ -31,6 +66,8 @@ def main():
     parser.add_argument("--compartment", help="plot Compartment (eigen)", action='store_true')
     parser.add_argument("--di",   help="plot Directionaly Index", action='store_true')
     parser.add_argument("--dfr",   help="plot DirectionalFreqRatio", action='store_true')
+    parser.add_argument("--dfr_right",   help="(with --dfr) plot DirectionalFreqRatio (Right)", action='store_true')
+    parser.add_argument("--dfr_left",   help="(with --dfr) plot DirectionalFreqRatio (Left)", action='store_true')
     parser.add_argument("--vmax", help="max value of color bar", type=int, default=50)
     parser.add_argument("--vmin", help="min value of color bar", type=int, default=0)
     parser.add_argument("-d", "--vizdistancemax", help="max distance in heatmap", type=int, default=0)
@@ -113,28 +150,8 @@ def main():
     nrow_now += nrow_eigen
 
     if (args.dfr):  # Directional Frequency Ratio
-        smooth_median_filter = 3
-        EnrichMatrices = make3dmatrixRatio(samples, smooth_median_filter)
-        for i, sample in enumerate(EnrichMatrices):
-            dfr = DirectionalFreqRatio(sample, resolution)
-            if i==0: Matrix = dfr.getarraydiff()
-            else:    Matrix = np.vstack((Matrix, dfr.getarraydiff()))
-
-        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_feature, colspan=5)
-        plt.imshow(Matrix[:,s:e],
-                   cmap=generate_cmap(['#1310cc', '#FFFFFF', '#d10a3f']),
-                   aspect="auto")
-        plt.colorbar()
-        plt.yticks(np.arange(len(labels)-1), labels[1:len(labels)])
-        xtickoff(plt)
-
-        nrow_now += nrow_feature
-        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=4)
-        for i, sample in enumerate(EnrichMatrices):
-            dfr = DirectionalFreqRatio(sample, resolution)
-            plt.plot(dfr.getarraydiff(), label=labels[i+1])
-        plt.xlim([s, e])
-        pltxticks(s, e, figstart, figend, 10)
+        plotDirectionalFreqRatio(plt, samples, resolution, figstart, figend, labels,
+                                 nrow, nrow_now, nrow_feature, args)
 
     elif (args.di):  # Directionality Index
         plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_feature, colspan=5)
