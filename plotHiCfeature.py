@@ -115,19 +115,25 @@ def main():
         smooth_median_filter = 3
         EnrichMatrices = make3dmatrixRatio(samples, smooth_median_filter)
         for i, sample in enumerate(EnrichMatrices):
-            DFRplus = getDirectionalFreqRatio(sample, resolution, "+")
-            DFRminus = getDirectionalFreqRatio(sample, resolution, "-")
-            if i==0: Matrix = DFRplus - DFRminus
-            else:    Matrix = np.vstack((Matrix, DFRplus - DFRminus))
+            dfr = DirectionalFreqRatio(sample, resolution)
+            if i==0: Matrix = dfr.getarraydiff()
+            else:    Matrix = np.vstack((Matrix, dfr.getarraydiff()))
 
         plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=5)
         plt.imshow(Matrix[:,s:e],
-#                   clim=(-0.05, 0.05),
                    cmap=generate_cmap(['#1310cc', '#FFFFFF', '#d10a3f']),
                    aspect="auto")
         plt.colorbar()
-        plt.yticks(np.arange(len(labels)), labels)
+        plt.yticks(np.arange(len(labels)-1), labels[1:len(labels)])
         xtickoff(plt)
+
+        nrow_now += 2
+        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=4)
+        for i, sample in enumerate(EnrichMatrices):
+            dfr = DirectionalFreqRatio(sample, resolution)
+            plt.plot(dfr.getarraydiff(), label=labels[i+1])
+        plt.xlim([s, e])
+        pltxticks(s, e, figstart, figend, 10)
 
     elif (args.di):  # Directionaly Index
         plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=3, colspan=5)

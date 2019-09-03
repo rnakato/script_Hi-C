@@ -70,15 +70,17 @@ def main():
                             distancemax=args.vizdistancemax,
                             label=labels[i+1], xticks=True)
 
-        DFRplus = getDirectionalFreqRatio(sample, resolution, "+")
-        DFRminus = getDirectionalFreqRatio(sample, resolution, "-")
+        dfr = DirectionalFreqRatio(sample, resolution)
+
         plt.subplot2grid((nsample*4, 5), (i*4+2,0), rowspan=1, colspan=4)
-        plt.plot(DFRplus, label="Right")
-        plt.plot(DFRminus, label="Left")
+        plt.plot(dfr.getarrayplus(), label="Right")
+        plt.plot(dfr.getarrayminus(), label="Left")
         plt.xlim([s,e])
         plt.legend()
+
         plt.subplot2grid((nsample*4, 5), (i*4+3,0), rowspan=1, colspan=4)
-        plt.bar(range(len(DFRplus)), DFRplus - DFRminus)
+        diff = dfr.getarraydiff()
+        plt.bar(range(len(diff)), diff)
         plt.xlim([s,e])
 
     plt.tight_layout()
