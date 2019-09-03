@@ -43,9 +43,9 @@ def plotDirectionalFreqRatio(plt, samples, resolution, figstart, figend, labels,
     plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=3, colspan=4)
     for i, sample in enumerate(Matrix):
         plt.plot(sample, label=labels[i+1])
-        if (args.dfr_right == True):  plt.title("Right")
-        elif (args.dfr_left == True): plt.title("Left")
-        else: plt.title("Right - Left")
+#        if (args.dfr_right == True):  plt.title("Right")
+ #       elif (args.dfr_left == True): plt.title("Left")
+  #      else: plt.title("Right - Left")
 
     plt.xlim([s, e])
     pltxticks(s, e, figstart, figend, 10)
@@ -53,16 +53,14 @@ def plotDirectionalFreqRatio(plt, samples, resolution, figstart, figend, labels,
     nrow_now += 3
 
     from hmmlearn import hmm
-    import collections
+    np.random.seed(1234)
     Matrix[np.isnan(Matrix)] = 0
-    plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=3, colspan=4)
-    ncluster = 6
+    ncluster = 8
     model = hmm.GaussianHMM(n_components=ncluster, n_iter=10000,
                             covariance_type="diag").fit(Matrix.T)
-    predicted = model.predict(Matrix.T)
-#    collections.Counter(predicted.tolist())
-#    state = pd.DataFrame(predicted)
-    plt.plot(predicted)
+    state = model.predict(Matrix.T)
+    plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=3, colspan=4)
+    plt.plot(state)
     plt.xlim([s, e])
     pltxticks(s, e, figstart, figend, 10)
 
