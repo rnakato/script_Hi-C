@@ -31,22 +31,6 @@ def DBSCANPlot(matrix, title, eps):
     plt.title(title, size=16)
     return dbscan
 
-def make3dmatrixRatio(samples, smoooth):
-    from scipy import ndimage
-    n = len(samples)
-    Ct = ndimage.median_filter(samples[0].getlog(isNonZero=False), smoooth)
-    x, y = Ct.shape
-    for i, sample in enumerate(samples[1:]):
-        if i==0:
-            data = sample.getlog(isNonZero=False)
-            Matrix = ndimage.median_filter(data - Ct, smoooth)
-        else:
-            data = sample.getlog(isNonZero=False)
-            M = ndimage.median_filter(data - Ct, smoooth)
-            Matrix = np.concatenate((Matrix, M))
-    Matrix = Matrix.reshape(n-1,x,y)
-    return Matrix
-
 def getSumMatrix(A, boundary):
     submatrix = np.vsplit(A, boundary)
     for i, mat in enumerate(submatrix):

@@ -10,6 +10,7 @@ from InsulationScore import getInsulationScoreOfMultiSample
 from generateCmap import *
 from loadData import *
 from PlotModule import *
+from DirectionalFreqRatio import *
 #import pysnooper
 
 #import pdb
@@ -29,6 +30,7 @@ def main():
     parser.add_argument("--multi",       help="plot MultiInsulation Score", action='store_true')
     parser.add_argument("--compartment", help="plot Compartment (eigen)", action='store_true')
     parser.add_argument("--di",   help="plot Directionaly Index", action='store_true')
+    parser.add_argument("--dfr",   help="plot DirectionalFreqRatio", action='store_true')
     parser.add_argument("--vmax", help="max value of color bar", type=int, default=50)
     parser.add_argument("--vmin", help="min value of color bar", type=int, default=0)
     parser.add_argument("-d", "--vizdistancemax", help="max distance in heatmap", type=int, default=0)
@@ -109,7 +111,25 @@ def main():
 
     nrow_now += nrow_eigen
 
-    if (args.di):  # Directionaly Index
+    if (args.dfr):  # Directional Frequency Ratio
+        smooth_median_filter = 3
+        EnrichMatrices = make3dmatrixRatio(samples, smooth_median_filter)
+        for i, sample in enumerate(EnrichMatrices):
+            DFRplus = getDirectionalFreqRatio(sample, resolution, "+")
+            DFRminus = getDirectionalFreqRatio(sample, resolution, "-")
+            if i==0: Matrix = DFRplus - DFRminus
+            else:    Matrix = np.vstack((Matrix, DFRplus - DFRminus))
+
+        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=5)
+        plt.imshow(Matrix[:,s:e],
+#                   clim=(-0.05, 0.05),
+                   cmap=generate_cmap(['#1310cc', '#FFFFFF', '#d10a3f']),
+                   aspect="auto")
+        plt.colorbar()
+        plt.yticks(np.arange(len(labels)), labels)
+        xtickoff(plt)
+
+    elif (args.di):  # Directionaly Index
         plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=3, colspan=5)
         vDI = getDirectionalityIndexOfMultiSample(samples, labels, distance=args.distance)
         plt.imshow(vDI.iloc[:,s:e],

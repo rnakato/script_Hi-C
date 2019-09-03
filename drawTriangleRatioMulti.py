@@ -7,21 +7,8 @@ import seaborn as sns
 from scipy import ndimage
 from HiCmodule import JuicerMatrix
 from generateCmap import *
-from Cluster import make3dmatrixRatio
 from PlotModule import *
-
-def getDirectionalFreqRatio(mat, resolution, strand, *, distance=2000000):
-    arraysize = mat.shape[0]
-    array = np.zeros(arraysize)
-    nbin = int(distance/resolution)
-    for i in range(nbin, arraysize - nbin):
-        if (strand == "+"):
-            val = mat[i+1:i+nbin, i].mean()
-        else:
-            val = mat[i, i-nbin:i-1].mean()
-        array[i] = val
-
-    return array
+from DirectionalFreqRatio import *
 
 #import pdb
 def main():
