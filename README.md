@@ -81,20 +81,18 @@ Usage:
                                            [--sizex SIZEX] [--sizey SIZEY]
                                            matrix output resolution
 
-
-### plotDirectionalyIndexMulti.py
-Plot multi-scale insulation scores from Juicer matrix
-
-Usage:
-
-     plotDirectionalyIndexMulti.py $samples $head.DI $region --type $type
-### plotInsulationScoreMulti.py
-Plot multi-scale insulation scores from Juicer matrix
+### plotHiCfeature.py 
+Plot various feature (Compartment, Directionality Index, Insulation score, etc) values of multiple Hi-C samples
 
 Usage:
 
-     plotInsulationScoreMulti.py $samples $head.MultiIS $region --type $type --multi
-     plotInsulationScoreMulti.py $samples $head.singleIS $region --type $type
+     plotHiCfeature.py [-h] [--type TYPE] [--distance DISTANCE]
+                         [-r RESOLUTION] [-s START] [-e END] [--multi]
+                         [--compartment] [--di] [--dfr] [--vmax VMAX]
+                         [--vmin VMIN] [-d VIZDISTANCEMAX] [--xsize XSIZE]
+                         [input [input ...]] output chr
+        
+     
 ### drawTriangleMulti.py
 Plot multi-scale insulation scores from Juicer matrix
 
