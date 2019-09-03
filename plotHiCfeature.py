@@ -137,7 +137,7 @@ def main():
         pltxticks(s, e, figstart, figend, 10)
 
     elif (args.di):  # Directionality Index
-        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=3, colspan=5)
+        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_feature, colspan=5)
         vDI = getDirectionalityIndexOfMultiSample(samples, labels, distance=args.distance)
         plt.imshow(vDI.iloc[:,s:e],
                    clim=(-1000, 1000),
