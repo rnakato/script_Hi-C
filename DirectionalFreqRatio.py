@@ -21,15 +21,21 @@ def make3dmatrixRatio(samples, smoooth):
     Matrix = Matrix.reshape(n-1,x,y)
     return Matrix
 
-def getDirectionalFreqRatio(mat, resolution, strand, *, distance=2000000):
+def getDirectionalFreqRatio(mat, resolution, strand, *,
+                            startdistance=0, distance=2000000):
+    if (startdistance >= distance):
+        print ("getDirectionalFreqRatio: Error: startdistance > enddistance")
+        exit(1)
+
     arraysize = mat.shape[0]
     array = np.zeros(arraysize)
     nbin = int(distance/resolution)
+    startbin = int(startdistance/resolution) +1
     for i in range(nbin, arraysize - nbin):
         if (strand == "+"):
-            val = mat[i+1:i+nbin, i].mean()
+            val = mat[i+startbin:i+nbin, i].mean()
         else:
-            val = mat[i, i-nbin:i-1].mean()
+            val = mat[i, i-nbin:i-startbin].mean()
         array[i] = val
 
     return array
