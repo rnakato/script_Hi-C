@@ -13,6 +13,19 @@ from PlotModule import *
 from DirectionalFreqRatio import *
 #import pysnooper
 
+def mergeState(df):
+    length = df.shape[0]
+    print (length)
+    i_prev = 0
+    for i in range(1, length):
+        if (df.state[i] == df.state[i_prev]):
+            df.iloc[i_prev,2] = df.iloc[i,2]
+            df.iloc[i,2] = np.nan
+        else:
+            i_prev = i
+
+    return df.dropna(axis = 0, how = 'any')
+
 #import pdb
 def plotDirectionalFreqRatio(plt, samples, resolution, figstart, figend, labels,
                              nrow, nrow_now, nrow_feature, args):
@@ -65,6 +78,31 @@ def plotDirectionalFreqRatio(plt, samples, resolution, figstart, figend, labels,
     pltxticks(s, e, figstart, figend, 10)
 
     plt.tight_layout()
+
+    df = pd.DataFrame(state)
+    df.columns = ["state"]
+    df["chr"] = args.chr
+    df["start"] = np.arange(len(state)) * resolution
+    df["end"] = df["start"] + args.resolution
+    df = df.loc[:,["chr","start","end","state"]]
+    df["score"] = "."
+    df["strand"] = "."
+    df["thickstart"] = df["start"]
+    df["thickend"] = df["end"]
+
+    RGBarray = ["0,0,255", "0,153,204", "0,255,255", "51,255,153",
+                "0,204,51", "0,102,0", "0,0,51", "204,0,51",
+                "255,0,204", "204,153,255", "204,204,102", "255,255,0"]
+
+    df["Rgb"] = "0,0,255"
+    for i in range(12):
+        df.loc[df['state'] == i, 'Rgb'] = RGBarray[i]
+
+    df = mergeState(df)
+    df["end"] = df['end'].astype(int)
+
+    df.to_csv(args.output + ".bed", sep="\t", header=False, index=False)
+
 
 #@pysnooper.snoop()
 def main():
@@ -165,77 +203,8 @@ def main():
 
     nrow_now += nrow_eigen
 
-    if (args.dfr):  # Directional Frequency Ratio
-        plotDirectionalFreqRatio(plt, samples, resolution, figstart, figend, labels,
-                                 nrow, nrow_now, nrow_feature, args)
-
-    elif (args.di):  # Directionality Index
-        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_feature, colspan=5)
-        vDI = getDirectionalityIndexOfMultiSample(samples, labels, distance=args.distance)
-        plt.imshow(vDI.iloc[:,s:e],
-                   clim=(-1000, 1000),
-                   cmap=generate_cmap(['#1310cc', '#FFFFFF', '#d10a3f']),
-                   aspect="auto")
-        plt.colorbar()
-        pltxticks(0, e-s, figstart, figend, 10)
-        plt.yticks(np.arange(len(labels)), labels)
-
-    elif (args.compartment): # Compartment
-        for i, sample in enumerate(samples):
-            if i==0: Matrix = sample.getEigen()
-            else:    Matrix = np.vstack((Matrix, sample.getEigen()))
-
-        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_feature, colspan=5)
-        plt.imshow(Matrix[:,s:e],
-                   clim=(-0.05, 0.05),
-                   cmap=generate_cmap(['#1310cc', '#FFFFFF', '#d10a3f']),
-                   aspect="auto")
-        plt.colorbar()
-        plt.yticks(np.arange(len(labels)), labels)
-        xtickoff(plt)
-
-        nrow_now += nrow_feature
-        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=4)
-        for i, sample in enumerate(samples):
-            plt.plot(sample.getEigen(), label=labels[i])
-        plt.xlim([s, e])
-        pltxticks(s, e, figstart, figend, 10)
-
-    elif (args.multi):     # Multi Insulation score
-        for i, sample in enumerate(samples):
-            plt.subplot2grid((nrow, 5), (i + nrow_now, 0), rowspan=1, colspan=5)
-            MI = sample.getMultiInsulationScore()
-            plt.imshow(MI.T.iloc[:,s:e],
-                       clim=(0.4, 1.0),
-                       cmap=generate_cmap(['#d10a3f', '#FFFFFF', '#1310cc']),
-                       aspect="auto")
-            plt.title(labels[i])
-            pltxticks(0, e-s, figstart, figend, 10)
-#            plt.yticks([2], (labels[i]))
-
-#            plt.xlim([s,e])
-#            pltxticks(s, e, figstart, figend, 10)
-            plt.colorbar()
-        plt.tight_layout()
-
-    else:                  # Single Insulation score
-        Matrix = getInsulationScoreOfMultiSample(samples, labels)
-        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_feature, colspan=5)
-        plt.imshow(Matrix.T.iloc[:,s:e],
-                   clim=(0.4, 1.0),
-                   cmap=generate_cmap(['#d10a3f', '#FFFFFF', '#1310cc']),
-                   aspect="auto")
-        plt.colorbar()
-        pltxticks(0, e-s, figstart, figend, 10)
-        plt.yticks(np.arange(len(labels)), labels)
-
-        nrow_now += nrow_feature
-
-        plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=4)
-        for i in range(len(samples)):
-            plt.plot(Matrix.iloc[s:e,i], label=labels[i])
-        plt.xlim([figstart, figend])
-#        plt.legend()
+    plotDirectionalFreqRatio(plt, samples, resolution, figstart, figend, labels,
+                             nrow, nrow_now, nrow_feature, args)
 
     plt.savefig(args.output + ".pdf")
 
