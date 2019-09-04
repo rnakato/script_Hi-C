@@ -28,6 +28,15 @@ def axxticks(ax, start, end, figstart, figend, nmem):
     ax.set_xticks(x)
     ax.set_xticklabels(xval)
 
+def ytickoff(plt):
+    plt.tick_params(
+        axis='y',          # changes apply to the x-axis
+        which='both',      # both major and minor ticks are affected
+        left=False,        # ticks along the bottom edge are off
+        right=False,       # ticks along the top edge are off
+        labelleft=False
+    )
+
 def xtickoff(plt):
     plt.tick_params(
         axis='x',          # changes apply to the x-axis
@@ -37,7 +46,8 @@ def xtickoff(plt):
         labelbottom=False  # labels along the bottom edge are off
     )
 
-def drawHeatmapSquare(plt, matrix, resolution, *, tads="", figstart=0, figend=0,
+def drawHeatmapSquare(plt, matrix, resolution, *, tads="", loops="",
+                      figstart=0, figend=0, distancemax=0,
                       vmin=0, vmax=50, label="", xticks=True,
                       cmap=generate_cmap(['#FFFFFF', '#d10a3f'])):
     s = int(figstart / resolution)
@@ -49,7 +59,7 @@ def drawHeatmapSquare(plt, matrix, resolution, *, tads="", figstart=0, figend=0,
     else:
         mat = matrix[s:e,s:e]
 
-    plt.imshow(mat, clim=(vmin, vmax), cmap=cmap, interpolation="nearest", aspect='auto')
+    plt.imshow(mat, clim=(vmin, vmax), cmap=cmap, interpolation="nearest", aspect=1)
 
     if (isinstance(tads, pd.DataFrame)):
         for tad in tads.itertuples(name=None):
@@ -63,9 +73,10 @@ def drawHeatmapSquare(plt, matrix, resolution, *, tads="", figstart=0, figend=0,
         pltxticks(0, e-s, figstart, figend, 10)
     else:
         xtickoff(plt)
+        ytickoff(plt)
 
 def drawHeatmapTriangle(plt, matrix, resolution, *, tads="", loops="",
-                        figstart=0, figend=0, distancemax=0,
+                        figstart=0, figend=0,
                         vmin=0, vmax=50, label="", xticks=True,
                         cmap=generate_cmap(['#FFFFFF', '#d10a3f'])):
     s = int(figstart / resolution)
