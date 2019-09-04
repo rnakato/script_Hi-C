@@ -17,7 +17,7 @@ binsize=$4
 build=$5
 
 pwd=$(cd $(dirname $0) && pwd)
-juicertool="java -Xms512m -Xmx2048m -jar $pwd/../binaries/Aidenlab/juicer_tools.1.8.9_jcuda.0.8.jar"
+juicertool="java -Xms512m -Xmx16384m -jar $pwd/../binaries/Aidenlab/juicer_tools.1.8.9_jcuda.0.8.jar"
 gt=$($pwd/../script_rnakato/database.sh)/UCSC/$build/genome_table
 chrlist=$($pwd/../script_rnakato/getchr_from_genometable.sh $gt)
 
