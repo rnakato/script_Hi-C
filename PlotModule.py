@@ -76,7 +76,7 @@ def drawHeatmapSquare(plt, matrix, resolution, *, tads="", loops="",
         ytickoff(plt)
 
 def drawHeatmapTriangle(plt, matrix, resolution, *, tads="", loops="",
-                        figstart=0, figend=0,
+                        figstart=0, figend=0, distancemax=5000000,
                         vmin=0, vmax=50, label="", xticks=True,
                         cmap=generate_cmap(['#FFFFFF', '#d10a3f'])):
     s = int(figstart / resolution)

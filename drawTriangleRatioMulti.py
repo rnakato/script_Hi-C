@@ -59,7 +59,7 @@ def main():
     EnrichMatrices = make3dmatrixRatio(samples, smooth_median_filter)
 
     nsample = len(samples) -1
-    plt.figure(figsize=(10, nsample*5))
+    plt.figure(figsize=(6, nsample*5))
 
     for i, sample in enumerate(EnrichMatrices):
         # Hi-C Map

@@ -125,7 +125,7 @@ def main():
     parser.add_argument("--vmax", help="max value of color bar", type=int, default=50)
     parser.add_argument("--vmin", help="min value of color bar", type=int, default=0)
     parser.add_argument("-d", "--vizdistancemax", help="max distance in heatmap", type=int, default=0)
-    parser.add_argument("--xsize", help="xsize for figure", type=int, default=14)
+    parser.add_argument("--xsize", help="xsize for figure", type=int, default=10)
 #    parser.add_argument("--ysize", help="ysize (* times of samples)", type=int, default=3)
 
     args = parser.parse_args()
@@ -170,13 +170,9 @@ def main():
     nrow_now = 0
 
     ### Plot
-    if (args.multi):
-        plt.figure(figsize=(args.xsize, 6 + len(samples)))
-        nrow = nrow_heatmap + nrow_eigen + len(samples)
-    else:
-        plt.figure(figsize=(args.xsize, 6))
-        nrow_feature = int(len(samples)/3)
-        nrow = nrow_heatmap + nrow_eigen + nrow_feature + 6
+    plt.figure(figsize=(args.xsize, 10))
+    nrow_feature = int(len(samples)/3)
+    nrow = nrow_heatmap + nrow_eigen + nrow_feature + 6
 
     # Hi-C Map
     plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_heatmap, colspan=5)
