@@ -7,7 +7,7 @@ from sklearn import linear_model
 from InsulationScore import *
 from DirectionalityIndex import *
 from loadData import loadDenseMatrix
-from generateCmap import generate_cmap
+from generateCmap import *
 
 def getNonZeroMatrix(A, lim_pzero):
     A = A.fillna(0)
@@ -31,6 +31,10 @@ class JuicerMatrix:
             sys.exit()
         if os.path.exists(eigenfile):
             self.eigen = np.loadtxt(eigenfile)
+            eigen_sortindex = np.argsort(self.eigen)
+            eigen_sort = self.eigen[eigen_sortindex]
+            self.eigen_sortindex = eigen_sortindex[~np.isnan(eigen_sort)]
+#            eigen_sort = eigen[eigen_sortindex]
         else:
             self.eigen = np.zeros(self.raw.shape[0])
         if norm == "RPM":
@@ -38,14 +42,18 @@ class JuicerMatrix:
         self.InsulationScore = MultiInsulationScore(self.getmatrix().values,
                                                     1000000, 100000, self.res)
 
-    def getmatrix(self, *, isNonZero=False):
+    def getmatrix(self, *, isNonZero=False, sortEigen=False):
         if isNonZero == True:
             return getNonZeroMatrix(self.raw, 0)
+        elif sortEigen == True:
+            m = self.raw.iloc[self.eigen_sortindex,:]
+            m = m.iloc[:,self.eigen_sortindex]
+            return m
         else:
             return self.raw
 
-    def getlog(self, *, isNonZero=False):
-        mat = self.getmatrix(isNonZero=isNonZero)
+    def getlog(self, *, isNonZero=False, sortEigen=False):
+        mat = self.getmatrix(isNonZero=isNonZero, sortEigen=sortEigen)
         logmat = mat.apply(np.log1p)
         return logmat
 
@@ -61,8 +69,11 @@ class JuicerMatrix:
 #        ccmat = pd.DataFrame(ccmat, index=oe.index, columns=oe.index)
 #        return ccmat
 
-    def getEigen(self):
-        return self.eigen
+    def getEigen(self, *, sortEigen=False):
+        if sortEigen == True:
+            return self.eigen[self.eigen_sortindex]
+        else:
+            return self.eigen
 #        from sklearn.decomposition import PCA
 #        pca = PCA()
 #        ccmat = self.getPearson()
