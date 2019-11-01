@@ -37,8 +37,8 @@ if(__name__ == '__main__'):
     args = parser.parse_args()
 #    print(args)
 
-    eigen = loadEigen(args.input,
-                      args.gene,
-                      args.chr,
-                      args.resolution)
+    eigen = fixEigendir(args.input,
+                        args.gene,
+                        args.chr,
+                        args.resolution)
     np.savetxt(args.output, eigen, fmt="%0.6f")

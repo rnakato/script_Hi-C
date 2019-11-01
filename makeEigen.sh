@@ -32,12 +32,16 @@ do
 
     chr=$(echo $chr | sed -e 's/chr//g')
     echo "chr$chr"
-    ex "$juicertool pearsons    -p $norm $hic chr$chr BP $binsize $dir/pearson.$norm.chr$chr.matrix"
-    ex "$juicertool eigenvector -p $norm $hic chr$chr BP $binsize $dir/eigen.$norm.chr$chr.txt"
-    if test -s $dir/pearson.$norm.chr$chr.matrix; then
-	gzip -f $dir/pearson.$norm.chr$chr.matrix
+    if test ! -e $dir/pearson.$norm.chr$chr.matrix.gz; then
+	ex "$juicertool pearsons    -p $norm $hic chr$chr BP $binsize $dir/pearson.$norm.chr$chr.matrix"
+	if test -s $dir/pearson.$norm.chr$chr.matrix; then
+	    gzip -f $dir/pearson.$norm.chr$chr.matrix
+	fi
     fi
-    if test -s $dir/eigen.$norm.chr$chr.txt; then
+    if test ! -e $dir/eigen.$norm.chr$chr.txt.gz; then
+	ex "$juicertool eigenvector -p $norm $hic chr$chr BP $binsize $dir/eigen.$norm.chr$chr.txt"
+    fi
+    if test ! -e $dir/eigen.$norm.chr$chr.txt.gz; then
 	$pwd/fixEigendir.py $dir/eigen.$norm.chr$chr.txt \
 			    $dir/eigen.$norm.chr$chr.txt.temp \
 			    $($pwd/../script_rnakato/database.sh)/UCSC/$build/refFlat.txt \
