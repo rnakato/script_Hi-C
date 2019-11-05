@@ -3,6 +3,7 @@
 
 import argparse
 from InsulationScore import *
+from generateCmap import *
 
 if(__name__ == '__main__'):
     parser = argparse.ArgumentParser()
