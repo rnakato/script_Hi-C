@@ -26,6 +26,24 @@ mkdir -p $dir
 
 ex(){ echo $1; eval $1; }
 
+getPearson(){
+    ex "$juicertool pearsons    -p $norm $hic chr$chr BP $binsize $dir/pearson.$norm.chr$chr.matrix"
+    if test -s $dir/pearson.$norm.chr$chr.matrix; then
+	gzip -f $dir/pearson.$norm.chr$chr.matrix
+    fi
+}
+
+getEigen(){
+    ex "$juicertool eigenvector -p $norm $hic chr$chr BP $binsize $dir/eigen.$norm.chr$chr.txt"
+    $pwd/fixEigendir.py $dir/eigen.$norm.chr$chr.txt \
+			$dir/eigen.$norm.chr$chr.txt.temp \
+			$($pwd/../script_rnakato/database.sh)/UCSC/$build/refFlat.txt \
+			chr$chr \
+			$binsize
+    mv $dir/eigen.$norm.chr$chr.txt.temp $dir/eigen.$norm.chr$chr.txt
+    gzip -f $dir/eigen.$norm.chr$chr.txt
+}
+
 for chr in $chrlist
 do
     if test $chr = "chrY" -o $chr = "chrM" -o $chr = "chrMT" ;then continue; fi
@@ -33,21 +51,10 @@ do
     chr=$(echo $chr | sed -e 's/chr//g')
     echo "chr$chr"
     if test ! -e $dir/pearson.$norm.chr$chr.matrix.gz; then
-	ex "$juicertool pearsons    -p $norm $hic chr$chr BP $binsize $dir/pearson.$norm.chr$chr.matrix"
-	if test -s $dir/pearson.$norm.chr$chr.matrix; then
-	    gzip -f $dir/pearson.$norm.chr$chr.matrix
-	fi
+	getPearson &
     fi
+
     if test ! -e $dir/eigen.$norm.chr$chr.txt.gz; then
-	ex "$juicertool eigenvector -p $norm $hic chr$chr BP $binsize $dir/eigen.$norm.chr$chr.txt"
-    fi
-    if test ! -e $dir/eigen.$norm.chr$chr.txt.gz; then
-	$pwd/fixEigendir.py $dir/eigen.$norm.chr$chr.txt \
-			    $dir/eigen.$norm.chr$chr.txt.temp \
-			    $($pwd/../script_rnakato/database.sh)/UCSC/$build/refFlat.txt \
-			    chr$chr \
-			    $binsize
-	mv $dir/eigen.$norm.chr$chr.txt.temp $dir/eigen.$norm.chr$chr.txt
-	gzip -f $dir/eigen.$norm.chr$chr.txt
+	getEigen &
     fi
 done
