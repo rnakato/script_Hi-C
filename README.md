@@ -105,6 +105,12 @@ Exammple:
      plotHiCfeature.py Ctrl:Control CTCF:siCTCF chr9left.MultiIS chr9 --start 1000000 --end 38000000 --type VC_SQRT -d 5000000 --multi
      # single InsulationScore
      plotHiCfeature.py Ctrl:Control CTCF:siCTCF chr9left.SingleIS chr9 --start 1000000 --end 38000000 --type VC_SQRT -d 5000000
+     # DirectionalFreqRatio
+     plotHiCfeature.py Ctrl:Control CTCF:siCTCF chr9left.DFR chr9 --start 1000000 --end 38000000 --type VC_SQRT -d 5000000 --dfr
+     # DirectionalFreqRatio (right)
+     plotHiCfeature.py Ctrl:Control CTCF:siCTCF chr9left.DFRright chr9 --start 1000000 --end 38000000 --type VC_SQRT -d 5000000 --dfr_right
+     # DirectionalFreqRatio (left)
+     plotHiCfeature.py Ctrl:Control CTCF:siCTCF chr9left.DFRleft chr9 --start 1000000 --end 38000000 --type VC_SQRT -d 5000000 --dfr_left
 
 ### drawTriangleMulti.py
 Plot Interaction matrix from Juicer matrix
@@ -120,3 +126,20 @@ Plot Interaction ratio (from 2nd to the last samples divided by 1st sample).
 Usage:
 
      drawTriangleRatioMulti.py [input [input ...]] output region --type $type    # logratio
+
+###  DirectionalFreqRatio.py
+
+Output  DirectionalFreqRatio as bedGraph
+
+Usage: 
+
+     DirectionalFreqRatio.py [-h] [--dfr_right] [--dfr_left] input control output chr resolution
+
+Example: 
+
+     DirectionalFreqRatio.py \
+              Ctrl/matrix/intrachromosomal/25000/observed.VC_SQRT.chr21.matri x.gz \
+              siCTCF/matrix/intrachromosomal/25000/observed.VC_SQRT.chr21.matrix.gz \
+              CTCF.DFR.chr21 \
+              chr21 \
+              25000
