@@ -12,7 +12,7 @@ def calceach(mat, squaresize, resolution):
     array = np.zeros(mat.shape[0])
     for i in range(mat.shape[0]):
         if(i - matsize < 0 or i + matsize >= mat.shape[0]): continue
-        array[i] = mat[i-matsize: i-1, i+1: i+matsize].mean()
+        array[i] = mat[i-matsize: i-1, i+1: i + matsize +1].mean()
 
     array = np.log1p(array/np.nanmean(array))
     return array

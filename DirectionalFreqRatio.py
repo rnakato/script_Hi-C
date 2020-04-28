@@ -33,9 +33,9 @@ def getDirectionalFreqRatio(mat, resolution, strand, *,
     startbin = int(startdistance/resolution) +1
     for i in range(nbin, arraysize - nbin):
         if (strand == "+"):
-            val = mat[i+startbin:i+nbin, i].mean()
+            val = mat[i+startbin:i+nbin+1, i].mean()
         else:
-            val = mat[i, i-nbin:i-startbin].mean()
+            val = mat[i, i-nbin:i-startbin+1].mean()
         array[i] = val
 
     return array

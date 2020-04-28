@@ -18,7 +18,9 @@ def loadTADs(filename, chr, *, start=0, end=99999999999):
 
 def loadloops(filename, chr, *, start=0, end=99999999999):
     if os.path.exists(filename):
-        loops = pd.read_csv(filename, delimiter='\t', usecols=['chr1','x1','x2','chr2','y1','y2'])
+        loops = pd.read_csv(filename, delimiter='\t', usecols=['#chr1','x1','x2','chr2','y1','y2']) #loops = pd.read_csv(filename, delimiter='\t', usecols=['chr1','x1','x2','chr2','y1','y2'])
+        loops.rename(columns={"#chr1":"chr1"},inplace =True)
+        loops.drop([0],inplace= True)
         loops = loops[loops.chr1 == chr]
         loops = loops[loops.chr2 == chr]
         loops = loops[loops.x2 < end]

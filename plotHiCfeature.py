@@ -126,10 +126,10 @@ def main():
     # Hi-C Map
     plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_heatmap, colspan=5)
 
-    tadfile = dirs[0] + "/contact_domain/" + str(resolution) + "_blocks.bedpe"
+    tadfile = dirs[0] + "/TAD/" + type + str(resolution) + "_blocks.bedpe"  #    tadfile = dirs[0] + "/contact_domain/" + str(resolution) + "_blocks.bedpe"
     print(tadfile)
     tads = loadTADs(tadfile, chr[3:], start=figstart, end=figend)
-    loopfile = dirs[0] + "/loops/merged_loops.bedpe"
+    loopfile = dirs[0] + "/loops/" + type + "merged_loops.bedpe"  #    loopfile = dirs[0] + "/loops/merged_loops.bedpe"
     print(loopfile)
     loops = loadloops(loopfile, chr[3:], start=figstart, end=figend)
 
