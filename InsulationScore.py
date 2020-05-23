@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -10,11 +11,15 @@ from loadData import loadDenseMatrix
 def calceach(mat, squaresize, resolution):
     matsize = int(squaresize / resolution)
     array = np.zeros(mat.shape[0])
+
     for i in range(mat.shape[0]):
         if(i - matsize < 0 or i + matsize >= mat.shape[0]): continue
         array[i] = mat[i-matsize:i, i+1:i+matsize+1].mean()
+#    print(squaresize, np.nanmean(array))
 
-    array = np.log1p(array/np.nanmean(array))
+    if (np.nanmean(array) != 0):
+        array = np.log1p(array/np.nanmean(array))
+
     return array
 
 def calcInsulationScore(mat, max_sqsize, step, resolution):
@@ -87,19 +92,33 @@ if(__name__ == '__main__'):
     parser.add_argument("output", help="Output prefix", type=str)
     parser.add_argument("chr", help="Chromosome", type=str)
     parser.add_argument("resolution", help="Resolution of the input matrix", type=int)
+    parser.add_argument("--maxdistance", help="Max distance of MultiInsulationScore (default: 1000000)", type=int, default=1000000)
+    parser.add_argument("--step", help="stepsize of MultiInsulationScore (default: 100000)", type=int, default=100000)
     parser.add_argument("--num4norm", help="Read number after normalization (default: 10000000)", type=int, default=10000000)
     parser.add_argument("--distance", help="Distance of Insulation Score (default: 500000)", type=int, default=500000)
 
     args = parser.parse_args()
-#    print(args)
+    print(args)
+
+    if args.step < args.resolution:
+        print("Error: please set step (" + str(args.step) + ") larger than resolution (" + str(args.resolution) + ")")
+        sys.exit()
+
+    if args.distance > args.maxdistance:
+        print("Error: please set distance (" + str(args.distance) + ") less than maxdistance (" + str(args.maxdistance) + ")")
+        sys.exit()
 
     matrix = loadDenseMatrix(args.matrix)
     matrix = matrix * args.num4norm / np.nansum(matrix)
 
-    MI = MultiInsulationScore(matrix.values, 1000000, 100000, args.resolution)
+    MI = MultiInsulationScore(matrix.values, args.maxdistance, args.step, args.resolution)
+
+#    print(MI.getMultiInsulationScore())
+#    sys.exit()
 
     # output InsulationScore to BedGraph
     df = MI.getInsulationScore(distance=args.distance)
+
     df = df.replace([np.inf, -np.inf], 0)
     df.columns = ["Insulation Score"]
     df["chr"] = args.chr
