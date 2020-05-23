@@ -46,6 +46,8 @@ class MultiInsulationScore:
                 InsulationScore = np.c_[InsulationScore, calceach(mat, i * step, resolution)]
 
         InsulationScore = InsulationScore.T
+        InsulationScore = np.nan_to_num(InsulationScore)  # fill 0 in NA
+
         self.MI = pd.DataFrame(InsulationScore)
         self.MI.index = np.arange(imax, 0, -1) * step
         self.MI.columns = self.MI.columns * resolution
@@ -92,34 +94,39 @@ if(__name__ == '__main__'):
     parser.add_argument("output", help="Output prefix", type=str)
     parser.add_argument("chr", help="Chromosome", type=str)
     parser.add_argument("resolution", help="Resolution of the input matrix", type=int)
-    parser.add_argument("--maxdistance", help="Max distance of MultiInsulationScore (default: 1000000)", type=int, default=1000000)
-    parser.add_argument("--step", help="stepsize of MultiInsulationScore (default: 100000)", type=int, default=100000)
+#    parser.add_argument("--maxdistance", help="Max distance of MultiInsulationScore (default: 1000000)", type=int, default=1000000)
+#    parser.add_argument("--step", help="stepsize of MultiInsulationScore (default: 100000)", type=int, default=100000)
     parser.add_argument("--num4norm", help="Read number after normalization (default: 10000000)", type=int, default=10000000)
     parser.add_argument("--distance", help="Distance of Insulation Score (default: 500000)", type=int, default=500000)
 
     args = parser.parse_args()
-    print(args)
+#    print(args)
 
-    if args.step < args.resolution:
-        print("Error: please set step (" + str(args.step) + ") larger than resolution (" + str(args.resolution) + ")")
-        sys.exit()
+#    if args.step < args.resolution:
+#        print("Error: please set step (" + str(args.step) + ") larger than resolution (" + str(args.resolution) + ")")
+#        sys.exit()
 
-    if args.distance > args.maxdistance:
-        print("Error: please set distance (" + str(args.distance) + ") less than maxdistance (" + str(args.maxdistance) + ")")
-        sys.exit()
+#    if args.distance > args.maxdistance:
+#        print("Error: please set distance (" + str(args.distance) + ") less than maxdistance (" + str(args.maxdistance) + ")")
+#        sys.exit()
 
     matrix = loadDenseMatrix(args.matrix)
     matrix = matrix * args.num4norm / np.nansum(matrix)
 
-    MI = MultiInsulationScore(matrix.values, args.maxdistance, args.step, args.resolution)
+#    MI = MultiInsulationScore(matrix.values, args.maxdistance, args.step, args.resolution)
+    MI = MultiInsulationScore(matrix.values, args.distance*2, args.distance, args.resolution)
 
 #    print(MI.getMultiInsulationScore())
-#    sys.exit()
 
     # output InsulationScore to BedGraph
     df = MI.getInsulationScore(distance=args.distance)
 
     df = df.replace([np.inf, -np.inf], 0)
+
+#    pd.set_option('display.max_rows', 1000)
+#    print(df)
+#    sys.exit()
+
     df.columns = ["Insulation Score"]
     df["chr"] = args.chr
     df["start"] = df.index
