@@ -6,7 +6,7 @@ import pandas as pd
 from scipy import ndimage
 import argparse
 
-def make3dmatrixRatio(samples, smoooth):
+def make3dmatrixRatio(samples, smoooth=3):
     n = len(samples)
     Ct = ndimage.median_filter(samples[0].getlog(isNonZero=False), smoooth)
     x, y = Ct.shape
