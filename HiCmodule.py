@@ -98,6 +98,8 @@ def ExtractMatrix(mat,s,e):
     else:
         return mat.values[s:e,s:e]
 
+
+
 def ExtractMatrixIndex(mat,index1,index2):
     mat = mat[index1,:]
     mat = mat[:,index2]

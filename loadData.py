@@ -8,7 +8,7 @@ def loadDenseMatrix(filename):
 
 def loadTADs(filename, chr, *, start=0, end=99999999999):
     if os.path.exists(filename):
-        tads = pd.read_csv(filename, delimiter='\t', usecols=['chr1','x1','x2'])
+        tads = pd.read_csv(filename, delimiter='\t', usecols=['#chr1','x1','x2'])
         tads = tads[tads.chr1 == chr]
         tads = tads[tads.x1 < end]
         tads = tads[tads.x2 >= start]

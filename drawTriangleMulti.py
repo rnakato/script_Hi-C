@@ -67,10 +67,10 @@ def main():
     plt.figure(figsize=(args.xsize, nsample*args.ysize))
 
     for i, sample in enumerate(samples):
-        tadfile = dirs[i] + "/contact_domain/" + str(resolution) + "_blocks.bedpe"
+        tadfile = dirs[i] + "/TAD/" + type + "/" + str(resolution) + "_blocks.bedpe"
         print(tadfile)
         tads = loadTADs(tadfile, chr[3:], start=figstart, end=figend)
-        loopfile = dirs[i] + "/loops/merged_loops.bedpe"
+        loopfile = dirs[i] + "/loops/" + type + "/merged_loops.bedpe"
         print(loopfile)
         loops = loadloops(loopfile, chr[3:], start=figstart, end=figend)
         # Hi-C Map
