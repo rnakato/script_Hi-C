@@ -21,9 +21,10 @@ def main():
     parser.add_argument("-r", "--resolution", help="resolution", type=int, default=25000)
     parser.add_argument("-s", "--start", help="start bp", type=int, default=0)
     parser.add_argument("-e", "--end", help="end bp", type=int, default=1000000)
-    parser.add_argument("-d", "--vizdistancemax", help="max distance in heatmap", type=int, default=0)
     parser.add_argument("--vmax", help="max value of color bar", type=int, default=1)
     parser.add_argument("--vmin", help="min value of color bar", type=int, default=-1)
+    parser.add_argument("--xsize", help="xsize for figure", type=int, default=3)
+    parser.add_argument("--ysize", help="ysize (* times of samples)", type=int, default=3)
 
     args = parser.parse_args()
 #    print(args)
@@ -49,42 +50,30 @@ def main():
 
     print (chr)
     print (resolution)
+
     samples = []
     for dir in dirs:
         observed = dir + "/Matrix/intrachromosomal/" + str(resolution) + "/observed."  + type + "." + chr + ".matrix.gz"
-        samples.append(JuicerMatrix("RPM", observed, resolution)
+        samples.append(JuicerMatrix("RPM", observed, resolution))
 
-    ### Plot
     smooth_median_filter = 3
-    EnrichMatrices = make3dmatrixRatio(samples, smooth_median_filter)
+    mt1 = make3dmatrixRatio([samples[0], samples[1]], smooth_median_filter)
+    mt2 = make3dmatrixRatio([samples[2], samples[3]], smooth_median_filter)
+#    Combined = np.concatenate((mt1), axis=0)
 
-    nsample = len(samples) -1
-    plt.figure(figsize=(6, nsample*5))
+    matrix = np.triu(mt1[0], k=1) + np.tril(mt2[0], k=-1)
 
-    for i, sample in enumerate(EnrichMatrices):
-        # Hi-C Map
-        plt.subplot2grid((nsample*4, 5), (i*4,0), rowspan=2, colspan=5)
-        drawHeatmapTriangle(plt, sample, resolution,
-                            figstart=figstart, figend=figend, vmax=vmax, vmin=vmin,
-                            cmap=generate_cmap(['#1310cc', '#FFFFFF', '#d10a3f']),
-                            distancemax=args.vizdistancemax,
-                            label=labels[i+1], xticks=True)
+    if (labels[1] != "" and labels[3] != ""):
+        label = labels[1] + "-" + labels[3]
+    else:
+        label = ""
 
-        dfr = DirectionalFreqRatio(sample, resolution)
-
-        plt.subplot2grid((nsample*4, 5), (i*4+2,0), rowspan=1, colspan=4)
-        plt.plot(dfr.getarrayplus(), label="Right")
-        plt.plot(dfr.getarrayminus(), label="Left")
-        plt.xlim([s,e])
-        plt.legend()
-
-        plt.subplot2grid((nsample*4, 5), (i*4+3,0), rowspan=1, colspan=4)
-        diff = dfr.getarraydiff()
-        plt.bar(range(len(diff)), diff)
-        plt.xlim([s,e])
-        plt.title("Right - Left")
-
-    plt.tight_layout()
+    plt.subplot(1, 1, 1)
+    drawHeatmapSquare(plt, matrix, resolution,
+                      figstart=figstart, figend=figend,
+                      vmax=vmax, vmin=vmin,
+                      cmap=generate_cmap(['#1310cc', '#FFFFFF', '#d10a3f']),
+                      label=label, xticks=False)
     plt.savefig(args.output + ".pdf")
 
 if(__name__ == '__main__'):

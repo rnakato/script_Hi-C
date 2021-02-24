@@ -21,8 +21,8 @@ def main():
     parser.add_argument("-r", "--resolution", help="resolution", type=int, default=25000)
     parser.add_argument("-s", "--start", help="start bp", type=int, default=0)
     parser.add_argument("-e", "--end", help="end bp", type=int, default=1000000)
-    parser.add_argument("--vmax", help="max value of color bar", type=int, default=2)
-    parser.add_argument("--vmin", help="min value of color bar", type=int, default=-2)
+    parser.add_argument("--vmax", help="max value of color bar", type=int, default=1)
+    parser.add_argument("--vmin", help="min value of color bar", type=int, default=-1)
     parser.add_argument("--xsize", help="xsize for figure", type=int, default=3)
     parser.add_argument("--ysize", help="ysize (* times of samples)", type=int, default=3)
 
