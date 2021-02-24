@@ -58,10 +58,8 @@ def main():
     print (resolution)
     samples = []
     for dir in dirs:
-        observed = dir + "/Matrix/intrachromosomal/" + str(resolution) + "/observed."  + type + "." + chr + ".matrix.gz"
-#        eigen = dir + "/eigen/" + str(resolution) + "/gd_eigen."  + type + "." + chr + ".txt"
-#        samples.append(JuicerMatrix("RPM", observed, resolution, eigenfile=eigen))
-        samples.append(JuicerMatrix("RPM", observed, resolution))
+#        observed = dir + "/Matrix/intrachromosomal/" + str(resolution) + "/observed."  + type + "." + chr + ".matrix.gz"
+        samples.append(JuicerMatrix("RPM", dir, resolution))
 
     plt.subplot(1, 1, 1)
     if (args.log):
