@@ -53,8 +53,8 @@ def main():
 
     samples = []
     for dir in dirs:
-        observed = dir + "/Matrix/intrachromosomal/" + str(resolution) + "/observed."  + type + "." + chr + ".matrix.gz"
-        samples.append(JuicerMatrix("RPM", observed, resolution))
+#        observed = dir + "/Matrix/intrachromosomal/" + str(resolution) + "/observed."  + type + "." + chr + ".matrix.gz"
+        samples.append(JuicerMatrix("RPM", dir, resolution))
 
     smooth_median_filter = 3
     mt1 = make3dmatrixRatio([samples[0], samples[1]], smooth_median_filter)
