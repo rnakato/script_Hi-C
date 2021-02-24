@@ -137,3 +137,126 @@ def drawHeatmapTriangle(plt, matrix, resolution, *, tads="", loops="",
         pltxticks(0, (e-s)*1.41, figstart, figend, 10)
     else:
         xtickoff(plt)
+
+def drawHeatmapTrianglePair(plt, matrix1, matrix2, resolution, *, tads="", loops="", tads2="", loops2="",
+                            figstart=0, figend=0, distancemax=5000000,
+                            vmin=0, vmax=50, label="", xticks=True,
+                            cmap=generate_cmap(['#FFFFFF', '#d10a3f'])):
+    s = int(figstart / resolution)
+    e = int(figend   / resolution)
+    if (e==0): e = matrix1.shape[0]
+
+    if (isinstance(matrix1, pd.DataFrame)):
+        mat = matrix1.iloc[s:e,s:e]
+    else:
+        mat = matrix1[s:e,s:e]
+
+    plt.figure(figsize=(12, 8))
+    plt.subplot(2, 1, 1)
+
+    dst = ndimage.rotate(mat, 45, order=0, reshape=True, prefilter=False, cval=0)
+    plt.imshow(dst, clim=(vmin, vmax), cmap=cmap, interpolation="nearest", aspect='auto')
+    plt.colorbar()
+
+    ynum = dst.shape[0]/2
+    if (isinstance(tads, pd.DataFrame)):
+        for tad in tads.itertuples(name=None):
+            x1 = tad[2]/resolution - s
+            x2 = tad[3]/resolution - s
+            x1 *= 1.41
+            x2 *= 1.41
+            if (x1 >0):
+                xmed = (x1 + min([x2, (e-s)*1.41]))/2
+                plt.plot([x1, min([xmed, x2])],[ynum, ynum-(xmed-x1)],
+                         color='k', linestyle='dashed', linewidth=0.6)
+            if (x2 < (e-s)*1.41):
+                xmed = (max([x1, 0]) + x2) /2
+                plt.plot([x2, xmed],[ynum, ynum-(x2-xmed)],
+                         color='k', linestyle='dashed', linewidth=0.6)
+
+    if (isinstance(loops, pd.DataFrame)):
+        for loop in loops.itertuples(name=None):
+            x1 = (loop[2] + loop[3])/2/resolution - s
+            x2 = (loop[5] + loop[6])/2/resolution - s
+            x1 *= 1.41
+            x2 *= 1.41
+            if (x1 >0):
+                xmed = (x1 + min([x2, (e-s)*1.41]))/2
+                plt.plot([x1, min([xmed, x2])],[ynum, ynum-(xmed-x1)],
+                         color='b', linestyle='dashed', linewidth=0.5)
+            if (x2 < (e-s)*1.41):
+                xmed = (max([x1, 0]) + x2) /2
+                plt.plot([x2, xmed],[ynum, ynum-(x2-xmed)],
+                         color='b', linestyle='dashed', linewidth=0.6)
+
+    if (distancemax > 0):
+        ystart = max(0, ynum - distancemax/resolution)
+        plt.ylim(ynum, ystart)
+        pltyticks(ynum, ystart, 0, min(distancemax, (figend - figstart)), 5)
+    else:
+        ystart = 0
+        plt.ylim(ynum, ystart)
+        pltyticks(ynum, ystart, 0, figend - figstart, 5)
+
+    if (label != ""): plt.title(label)
+    xtickoff(plt)
+    ytickoff(plt)
+
+
+    plt.subplot(2, 1, 2)
+    if (isinstance(matrix2, pd.DataFrame)):
+        mat2 = matrix2.iloc[s:e,s:e]
+    else:
+        mat2 = matrix2[s:e,s:e]
+
+    dst = ndimage.rotate(mat2, 45, order=0, reshape=True, prefilter=False, cval=0)
+    plt.imshow(dst, clim=(vmin, vmax), cmap=cmap, interpolation="nearest", aspect='auto')
+    plt.colorbar()
+
+    ynum = dst.shape[0]/2
+    if (isinstance(tads2, pd.DataFrame)):
+        for tad in tads2.itertuples(name=None):
+            x1 = tad[2]/resolution - s
+            x2 = tad[3]/resolution - s
+            x1 *= 1.41
+            x2 *= 1.41
+            if (x1 >0):
+                xmed = (x1 + min([x2, (e-s)*1.41]))/2
+                plt.plot([x1, min([xmed, x2])],[ynum, ynum-(xmed-x1)],
+                         color='k', linestyle='dashed', linewidth=0.6)
+            if (x2 < (e-s)*1.41):
+                xmed = (max([x1, 0]) + x2) /2
+                plt.plot([x2, xmed],[ynum, ynum-(x2-xmed)],
+                         color='k', linestyle='dashed', linewidth=0.6)
+
+    if (isinstance(loops2, pd.DataFrame)):
+        for loop in loops2.itertuples(name=None):
+            x1 = (loop[2] + loop[3])/2/resolution - s
+            x2 = (loop[5] + loop[6])/2/resolution - s
+            x1 *= 1.41
+            x2 *= 1.41
+            if (x1 >0):
+                xmed = (x1 + min([x2, (e-s)*1.41]))/2
+                plt.plot([x1, min([xmed, x2])],[ynum, ynum-(xmed-x1)],
+                         color='b', linestyle='dashed', linewidth=0.5)
+            if (x2 < (e-s)*1.41):
+                xmed = (max([x1, 0]) + x2) /2
+                plt.plot([x2, xmed],[ynum, ynum-(x2-xmed)],
+                         color='b', linestyle='dashed', linewidth=0.6)
+
+    if (distancemax > 0):
+        ystart = max(0, ynum - distancemax/resolution)
+        plt.ylim(ystart, ynum)
+#        pltyticks(ynum, ystart, 0, min(distancemax, (figend - figstart)), 5)
+    else:
+        ystart = 0
+        plt.ylim(ystart, ynum)
+#        pltyticks(ynum, ystart, 0, figend - figstart, 5)
+
+#    if (label != ""): plt.title(label)
+    if (xticks):
+        pltxticks(0, (e-s)*1.41, figstart, figend, 10)
+    else:
+        xtickoff(plt)
+
+    plt.tight_layout()
