@@ -56,8 +56,9 @@ def main():
         samples.append(JuicerMatrix("RPM", observed, resolution))
 
     ### Plot
-    smooth_median_filter = 3
-    EnrichMatrices = make3dmatrixRatio(samples, smooth_median_filter)
+#    smooth_median_filter = 3
+#    EnrichMatrices = make3dmatrixRatio(samples, smooth_median_filter)
+    EnrichMatrices = make3dmatrixRatio(samples, 3)
 
     nsample = len(samples)
     plt.figure(figsize=(nsample*args.xsize/2, args.ysize*2))

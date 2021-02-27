@@ -114,14 +114,19 @@ def drawHeatmapTriangle(plt, matrix, resolution, *, tads="", loops="",
             x2 = (loop[5] + loop[6])/2/resolution - s
             x1 *= 1.41
             x2 *= 1.41
-            if (x1 >0):
+
+            if (x1 >0 and x2 < (e-s)*1.41):
                 xmed = (x1 + min([x2, (e-s)*1.41]))/2
-                plt.plot([x1, min([xmed, x2])],[ynum, ynum-(xmed-x1)],
-                         color='b', linestyle='dashed', linewidth=0.5)
-            if (x2 < (e-s)*1.41):
-                xmed = (max([x1, 0]) + x2) /2
-                plt.plot([x2, xmed],[ynum, ynum-(x2-xmed)],
-                         color='b', linestyle='dashed', linewidth=0.6)
+                plt.scatter(xmed, ynum-(xmed-x1), s=60, marker="o",  facecolor='None', edgecolors='blue')
+
+#            if (x1 >0):
+#                xmed = (x1 + min([x2, (e-s)*1.41]))/2
+#                plt.plot([x1, min([xmed, x2])],[ynum, ynum-(xmed-x1)],
+#                         color='b', linestyle='dashed', linewidth=0.5)
+#            if (x2 < (e-s)*1.41):
+#                xmed = (max([x1, 0]) + x2) /2
+#                plt.plot([x2, xmed],[ynum, ynum-(x2-xmed)],
+#                         color='b', linestyle='dashed', linewidth=0.6)
 
     if (distancemax > 0):
         ystart = max(0, ynum - distancemax/resolution)
