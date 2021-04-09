@@ -67,8 +67,10 @@ def main():
     parser.add_argument("--dfr",   help="plot DirectionalFreqRatio", action='store_true')
     parser.add_argument("--dfr_right",   help="(with --dfr) plot DirectionalFreqRatio (Right)", action='store_true')
     parser.add_argument("--dfr_left",   help="(with --dfr) plot DirectionalFreqRatio (Left)", action='store_true')
+    parser.add_argument("--v4c",   help="plot virtual 4C from Hi-C data", action='store_true')
     parser.add_argument("--vmax", help="max value of color bar", type=int, default=50)
     parser.add_argument("--vmin", help="min value of color bar", type=int, default=0)
+    parser.add_argument("--anchor", help="(for --v4c) anchor point", type=int, default=500000)
     parser.add_argument("-d", "--vizdistancemax", help="max distance in heatmap", type=int, default=0)
     parser.add_argument("--xsize", help="xsize for figure", type=int, default=10)
 #    parser.add_argument("--ysize", help="ysize (* times of samples)", type=int, default=3)
@@ -115,7 +117,7 @@ def main():
     nrow_now = 0
 
     ### Plot
-    if (args.multi):
+    if (args.multi or args.v4c):
         plt.figure(figsize=(args.xsize, 6 + len(samples)))
         nrow = nrow_heatmap + nrow_eigen + len(samples)
     else:
@@ -140,13 +142,13 @@ def main():
                         label=labels[0], xticks=False)
 
     nrow_now += nrow_heatmap
-    # Compartment
-    plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_eigen, colspan=4)
-    plt.plot(samples[0].getEigen())
-    plt.xlim([s,e])
-    xtickoff(plt)
 
-    nrow_now += nrow_eigen
+    # Compartment
+#    plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_eigen, colspan=4)
+#    plt.plot(samples[0].getEigen())
+#    plt.xlim([s,e])
+#    xtickoff(plt)
+#    nrow_now += nrow_eigen
 
     if (args.dfr):  # Directional Frequency Ratio
         plotDirectionalFreqRatio(plt, samples, resolution, figstart, figend, labels,
@@ -183,6 +185,24 @@ def main():
             plt.plot(sample.getEigen(), label=labels[i])
         plt.xlim([s, e])
         pltxticks(s, e, figstart, figend, 10)
+
+    elif (args.v4c):  # virtual 4c
+        a = int(args.anchor/resolution)
+
+        for i, sample in enumerate(samples):
+            plt.subplot2grid((nrow, 5), (i + nrow_now, 0), rowspan=1, colspan=4)
+
+            array = sample.getmatrix().iloc[a,s:e]
+            plt.plot(array, color="k")
+            plt.title(labels[i])
+            pltxticks(0, e-s, figstart, figend, 10)
+            plt.ylim(vmin, vmax)
+#            plt.yscale('log')
+
+            if s < a and a < e:
+                plt.axvline(x=a-s)
+
+        plt.tight_layout()
 
     elif (args.multi):     # Multi Insulation score
         for i, sample in enumerate(samples):
