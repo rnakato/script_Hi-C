@@ -62,6 +62,7 @@ def main():
     parser.add_argument("-s", "--start", help="start bp", type=int, default=0)
     parser.add_argument("-e", "--end",   help="end bp", type=int, default=1000000)
     parser.add_argument("--multi",       help="plot MultiInsulation Score", action='store_true')
+    parser.add_argument("--multidiff",   help="plot differential MultiInsulation Score", action='store_true')
     parser.add_argument("--compartment", help="plot Compartment (eigen)", action='store_true')
     parser.add_argument("--di",   help="plot Directionaly Index", action='store_true')
     parser.add_argument("--dfr",   help="plot DirectionalFreqRatio", action='store_true')
@@ -117,7 +118,7 @@ def main():
     nrow_now = 0
 
     ### Plot
-    if (args.multi or args.v4c):
+    if (args.multi or args.multidiff or args.v4c):
         plt.figure(figsize=(args.xsize, 6 + len(samples)))
         nrow = nrow_heatmap + nrow_eigen + len(samples)
     else:
@@ -218,6 +219,23 @@ def main():
 
 #            plt.xlim([s,e])
 #            pltxticks(s, e, figstart, figend, 10)
+            plt.colorbar()
+        plt.tight_layout()
+
+    elif (args.multidiff):     # differential Multi Insulation score
+        for i, sample in enumerate(samples):
+            if i == 0:
+                MIref = sample.getMultiInsulationScore()
+                continue
+
+            plt.subplot2grid((nrow, 5), (i-1 + nrow_now, 0), rowspan=1, colspan=5)
+            MI = sample.getMultiInsulationScore()
+            plt.imshow(MI.T.iloc[:,s:e] - MIref.T.iloc[:,s:e],
+                       clim=(-0.4, 0.4),
+                       cmap=generate_cmap(['#d10a3f', '#FFFFFF', '#1310cc']),
+                       aspect="auto")
+            plt.title(labels[i])
+            pltxticks(0, e-s, figstart, figend, 10)
             plt.colorbar()
         plt.tight_layout()
 
