@@ -22,6 +22,8 @@ def main():
     parser.add_argument("-s", "--start", help="start bp", type=int, default=0)
     parser.add_argument("-e", "--end", help="end bp", type=int, default=1000000)
     parser.add_argument("-d", "--vizdistancemax", help="max distance in heatmap", type=int, default=0)
+    parser.add_argument("--xsize", help="xsize for figure", type=int, default=10)
+ #   parser.add_argument("--ysize", help="ysize (* times of samples)", type=int, default=5)
     parser.add_argument("--vmax", help="max value of color bar", type=int, default=1)
     parser.add_argument("--vmin", help="min value of color bar", type=int, default=-1)
 
@@ -57,12 +59,16 @@ def main():
     smooth_median_filter = 3
     EnrichMatrices = make3dmatrixRatio(samples, smooth_median_filter)
 
+    rowspan_heatmap = 3
+    rowspan_barplot = 1
+    rowspan = rowspan_heatmap + rowspan_barplot*2
+
     nsample = len(samples) -1
-    plt.figure(figsize=(6, nsample*5))
+    plt.figure(figsize=(args.xsize, nsample*rowspan))
 
     for i, sample in enumerate(EnrichMatrices):
         # Hi-C Map
-        plt.subplot2grid((nsample*4, 5), (i*4,0), rowspan=2, colspan=5)
+        plt.subplot2grid((nsample*rowspan, 5), (i*rowspan,0), rowspan=rowspan_heatmap, colspan=5)
         drawHeatmapTriangle(plt, sample, resolution,
                             figstart=figstart, figend=figend, vmax=vmax, vmin=vmin,
                             cmap=generate_cmap(['#1310cc', '#FFFFFF', '#d10a3f']),
@@ -71,13 +77,13 @@ def main():
 
         dfr = DirectionalFreqRatio(sample, resolution)
 
-        plt.subplot2grid((nsample*4, 5), (i*4+2,0), rowspan=1, colspan=4)
+        plt.subplot2grid((nsample*rowspan, 5), (i*rowspan + rowspan_heatmap,0), rowspan=rowspan_barplot, colspan=4)
         plt.plot(dfr.getarrayplus(), label="Right")
         plt.plot(dfr.getarrayminus(), label="Left")
         plt.xlim([s,e])
-        plt.legend()
+        plt.legend(loc='lower right')
 
-        plt.subplot2grid((nsample*4, 5), (i*4+3,0), rowspan=1, colspan=4)
+        plt.subplot2grid((nsample*rowspan, 5), (i*rowspan + rowspan_heatmap + rowspan_barplot,0), rowspan=rowspan_barplot, colspan=4)
         diff = dfr.getarraydiff()
         plt.bar(range(len(diff)), diff)
         plt.xlim([s,e])
