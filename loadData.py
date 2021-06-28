@@ -4,6 +4,7 @@ import pandas as pd
 def loadDenseMatrix(filename):
     print(filename)
     data = pd.read_csv(filename, delimiter='\t', index_col=0)
+    data.columns = data.columns.astype('int')
     return data
 
 def loadTADs(filename, chr, *, start=0, end=99999999999):
