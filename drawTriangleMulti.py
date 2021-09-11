@@ -26,7 +26,7 @@ def main():
     parser.add_argument("--vmax", help="max value of color bar", type=int, default=50)
     parser.add_argument("--vmin", help="min value of color bar", type=int, default=0)
     parser.add_argument("-d", "--vizdistancemax", help="max distance in heatmap", type=int, default=0)
-    parser.add_argument("--xsize", help="xsize for figure", type=int, default=10)
+#    parser.add_argument("--xsize", help="xsize for figure", type=int, default=10)
     parser.add_argument("--ysize", help="ysize (* times of samples)", type=int, default=3)
 
     args = parser.parse_args()
@@ -53,6 +53,7 @@ def main():
     if (args.log):
         vmax = np.log1p(vmax)
         vmin = np.log1p(vmin)
+    figsize_x = max(int((figend-figstart)/2000000), 10)
 
     print (chr)
     print (resolution)
@@ -64,7 +65,7 @@ def main():
 
     ### Plot
     nsample = len(samples)
-    plt.figure(figsize=(args.xsize, nsample*args.ysize))
+    plt.figure(figsize=(figsize_x, nsample*args.ysize))
 
     for i, sample in enumerate(samples):
         tadfile = dirs[i] + "/TAD/" + type + "/" + str(resolution) + "_blocks.bedpe"

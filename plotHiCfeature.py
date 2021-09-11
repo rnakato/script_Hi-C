@@ -12,8 +12,8 @@ from loadData import *
 from PlotModule import *
 from DirectionalFreqRatio import *
 #import pysnooper
-
 #import pdb
+
 def plotDirectionalFreqRatio(plt, samples, resolution, figstart, figend, labels,
                              nrow, nrow_now, nrow_feature, args):
     s = int(figstart / resolution)
@@ -73,7 +73,7 @@ def main():
     parser.add_argument("--vmin", help="min value of color bar", type=int, default=0)
     parser.add_argument("--anchor", help="(for --v4c) anchor point", type=int, default=500000)
     parser.add_argument("-d", "--vizdistancemax", help="max distance in heatmap", type=int, default=0)
-    parser.add_argument("--xsize", help="xsize for figure", type=int, default=10)
+#    parser.add_argument("--xsize", help="xsize for figure", type=int, default=10)
 #    parser.add_argument("--ysize", help="ysize (* times of samples)", type=int, default=3)
 
     args = parser.parse_args()
@@ -99,6 +99,7 @@ def main():
     binnum = e-s
     vmax = args.vmax
     vmin = args.vmin
+    figsize_x = max(int((figend-figstart)/2000000), 10)
 
     print ("width: " + str(length) + ", " + str(binnum) + " bins.")
     if (length <= 0):
@@ -110,19 +111,19 @@ def main():
     samples = []
     for dir in dirs:
         observed = dir + "/Matrix/intrachromosomal/" + str(resolution) + "/observed."  + type + "." + chr + ".matrix.gz"
-        eigen = dir + "/Eigen/" + str(resolution) + "/gd_eigen."  + type + "." + chr + ".txt"
+        eigen = dir + "/Eigen/" + str(resolution) + "/eigen."  + type + "." + chr + ".txt.gz"
         samples.append(JuicerMatrix("RPM", observed, resolution, eigenfile=eigen))
 
-    nrow_heatmap = 3
+    nrow_heatmap = 2
     nrow_eigen = 1
     nrow_now = 0
 
     ### Plot
     if (args.multi or args.multidiff or args.v4c):
-        plt.figure(figsize=(args.xsize, 6 + len(samples)))
+        plt.figure(figsize=(figsize_x, 6 + len(samples)))
         nrow = nrow_heatmap + nrow_eigen + len(samples)
     else:
-        plt.figure(figsize=(args.xsize, 6))
+        plt.figure(figsize=(figsize_x, 8))
         nrow_feature = int(len(samples)/3)
         nrow = nrow_heatmap + nrow_eigen + nrow_feature + 2
 
@@ -145,11 +146,11 @@ def main():
     nrow_now += nrow_heatmap
 
     # Compartment
-#    plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_eigen, colspan=4)
-#    plt.plot(samples[0].getEigen())
-#    plt.xlim([s,e])
-#    xtickoff(plt)
-#    nrow_now += nrow_eigen
+    plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=nrow_eigen, colspan=4)
+    plt.plot(samples[0].getEigen())
+    plt.xlim([s,e])
+    xtickoff(plt)
+    nrow_now += nrow_eigen
 
     if (args.dfr):  # Directional Frequency Ratio
         plotDirectionalFreqRatio(plt, samples, resolution, figstart, figend, labels,

@@ -22,7 +22,7 @@ def main():
     parser.add_argument("-s", "--start", help="start bp", type=int, default=0)
     parser.add_argument("-e", "--end", help="end bp", type=int, default=1000000)
     parser.add_argument("-d", "--vizdistancemax", help="max distance in heatmap", type=int, default=0)
-    parser.add_argument("--xsize", help="xsize for figure", type=int, default=10)
+#    parser.add_argument("--xsize", help="xsize for figure", type=int, default=10)
  #   parser.add_argument("--ysize", help="ysize (* times of samples)", type=int, default=5)
     parser.add_argument("--vmax", help="max value of color bar", type=int, default=1)
     parser.add_argument("--vmin", help="min value of color bar", type=int, default=-1)
@@ -48,6 +48,7 @@ def main():
     e = int(figend   / resolution)
     vmax = args.vmax
     vmin = args.vmin
+    figsize_x = max(int((figend-figstart)/2000000), 10)
 
     print (chr)
     print (resolution)
@@ -64,7 +65,7 @@ def main():
     rowspan = rowspan_heatmap + rowspan_barplot*2
 
     nsample = len(samples) -1
-    plt.figure(figsize=(args.xsize, nsample*rowspan))
+    plt.figure(figsize=(figsize_x, nsample*rowspan))
 
     for i, sample in enumerate(EnrichMatrices):
         # Hi-C Map
@@ -81,12 +82,14 @@ def main():
         plt.plot(dfr.getarrayplus(), label="Right")
         plt.plot(dfr.getarrayminus(), label="Left")
         plt.xlim([s,e])
+        xtickoff(plt)
         plt.legend(loc='lower right')
 
         plt.subplot2grid((nsample*rowspan, 5), (i*rowspan + rowspan_heatmap + rowspan_barplot,0), rowspan=rowspan_barplot, colspan=4)
         diff = dfr.getarraydiff()
         plt.bar(range(len(diff)), diff)
         plt.xlim([s,e])
+        xtickoff(plt)
         plt.title("Right - Left")
 
     plt.tight_layout()

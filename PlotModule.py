@@ -10,7 +10,7 @@ def pltxticks(start, end, figstart, figend, nmem):
     mem = int((end - start)/nmem)
     x = start + np.arange(nmem+1) * mem
     val = (figend - figstart) / nmem
-    xval = (figstart + np.arange(nmem+1)*val)/Mega
+    xval = np.array(((figstart + np.arange(nmem+1) * val) / Mega * 10), dtype=np.int64) / 10
     plt.xticks(x, xval)
 
 def pltyticks(start, end, figstart, figend, nmem):
@@ -83,6 +83,9 @@ def drawHeatmapTriangle(plt, matrix, resolution, *, tads="", loops="",
     e = int(figend   / resolution)
     if (e==0): e = matrix.shape[0]
 
+    sqrt2 = np.sqrt(2)
+    figlength = (e-s)*sqrt2
+
     if (isinstance(matrix, pd.DataFrame)):
         mat = matrix.iloc[s:e,s:e]
     else:
@@ -97,13 +100,13 @@ def drawHeatmapTriangle(plt, matrix, resolution, *, tads="", loops="",
         for tad in tads.itertuples(name=None):
             x1 = tad[2]/resolution - s
             x2 = tad[3]/resolution - s
-            x1 *= 1.41
-            x2 *= 1.41
+            x1 *= sqrt2
+            x2 *= sqrt2
             if (x1 >0):
-                xmed = (x1 + min([x2, (e-s)*1.41]))/2
+                xmed = (x1 + min([x2, figlength]))/2
                 plt.plot([x1, min([xmed, x2])],[ynum, ynum-(xmed-x1)],
                          color='k', linestyle='dashed', linewidth=0.6)
-            if (x2 < (e-s)*1.41):
+            if (x2 < figlength):
                 xmed = (max([x1, 0]) + x2) /2
                 plt.plot([x2, xmed],[ynum, ynum-(x2-xmed)],
                          color='k', linestyle='dashed', linewidth=0.6)
@@ -112,11 +115,11 @@ def drawHeatmapTriangle(plt, matrix, resolution, *, tads="", loops="",
         for loop in loops.itertuples(name=None):
             x1 = (loop[2] + loop[3])/2/resolution - s
             x2 = (loop[5] + loop[6])/2/resolution - s
-            x1 *= 1.41
-            x2 *= 1.41
+            x1 *= sqrt2
+            x2 *= sqrt2
 
-            if (x1 >0 and x2 < (e-s)*1.41):
-                xmed = (x1 + min([x2, (e-s)*1.41]))/2
+            if (x1 >0 and x2 < figlength):
+                xmed = (x1 + min([x2, figlength]))/2
                 plt.scatter(xmed, ynum-(xmed-x1), s=60, marker="o",  facecolor='None', edgecolors='blue')
 
 #            if (x1 >0):
@@ -138,8 +141,9 @@ def drawHeatmapTriangle(plt, matrix, resolution, *, tads="", loops="",
         pltyticks(ynum, ystart, 0, figend - figstart, 5)
 
     if (label != ""): plt.title(label)
+    nxticks = max(int((figend - figstart)/Mega), 10)
     if (xticks):
-        pltxticks(0, (e-s)*1.41, figstart, figend, 10)
+        pltxticks(0, figlength, figstart, figend, nxticks)
     else:
         xtickoff(plt)
 

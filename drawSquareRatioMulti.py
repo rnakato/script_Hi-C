@@ -24,7 +24,7 @@ def main():
     parser.add_argument("--vmax", help="max value of color bar", type=int, default=1)
     parser.add_argument("--vmin", help="min value of color bar", type=int, default=-1)
     parser.add_argument("--xsize", help="xsize for figure", type=int, default=3)
-    parser.add_argument("--ysize", help="ysize (* times of samples)", type=int, default=3)
+#    parser.add_argument("--ysize", help="ysize (* times of samples)", type=int, default=3)
 
     args = parser.parse_args()
 #    print(args)
@@ -47,6 +47,7 @@ def main():
     e = int(figend   / resolution)
     vmax = args.vmax
     vmin = args.vmin
+    figsize_y = int((figend-figstart)/2000000)
 
     print (chr)
     print (resolution)
@@ -56,12 +57,11 @@ def main():
         samples.append(JuicerMatrix("RPM", observed, resolution))
 
     ### Plot
-#    smooth_median_filter = 3
-#    EnrichMatrices = make3dmatrixRatio(samples, smooth_median_filter)
-    EnrichMatrices = make3dmatrixRatio(samples, 3)
+    smooth_median_filter = 3
+    EnrichMatrices = make3dmatrixRatio(samples, smooth_median_filter)
 
     nsample = len(samples)
-    plt.figure(figsize=(nsample*args.xsize/2, args.ysize*2))
+    plt.figure(figsize=(nsample*args.xsize/2, figsize_y))
 
     for i, sample in enumerate(EnrichMatrices):
         # Hi-C Map
