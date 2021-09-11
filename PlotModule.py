@@ -6,6 +6,13 @@ from generateCmap import *
 
 Mega = 1000000
 
+def pltxticks_mega(start, end, figstart, figend):
+    xlen = (figend - figstart)
+    nmem = int(xlen/Mega) +1
+    x = start + np.arange(nmem) * (end-start) * Mega/xlen
+    xval = np.array(((figstart/Mega + np.arange(nmem))*10), dtype=np.int64) / 10
+    plt.xticks(x, xval)
+
 def pltxticks(start, end, figstart, figend, nmem):
     mem = int((end - start)/nmem)
     x = start + np.arange(nmem+1) * mem
@@ -141,9 +148,12 @@ def drawHeatmapTriangle(plt, matrix, resolution, *, tads="", loops="",
         pltyticks(ynum, ystart, 0, figend - figstart, 5)
 
     if (label != ""): plt.title(label)
-    nxticks = max(int((figend - figstart)/Mega), 10)
     if (xticks):
-        pltxticks(0, figlength, figstart, figend, nxticks)
+        if (figend - figstart > Mega*10):
+                pltxticks_mega(0, figlength, figstart, figend)
+        else:
+                nxticks = max(int((figend - figstart)/Mega), 10)
+                pltxticks(0, figlength, figstart, figend, nxticks)
     else:
         xtickoff(plt)
 
