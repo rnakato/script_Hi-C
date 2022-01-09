@@ -41,9 +41,9 @@ def getDirectionalFreqRatio(mat, resolution, strand, *,
     return array
 
 class DirectionalFreqRatio:
-    def __init__(self, mat, resolution, *, distance=2000000):
-        self.arrayplus = getDirectionalFreqRatio(mat, resolution, "+", distance=distance)
-        self.arrayminus = getDirectionalFreqRatio(mat, resolution, "-", distance=distance)
+    def __init__(self, mat, resolution, *, startdistance=0, distance=2000000):
+        self.arrayplus  = getDirectionalFreqRatio(mat, resolution, "+", startdistance=startdistance, distance=distance)
+        self.arrayminus = getDirectionalFreqRatio(mat, resolution, "-", startdistance=startdistance, distance=distance)
 
     def getarrayplus(self):
         return self.arrayplus

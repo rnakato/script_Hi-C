@@ -42,9 +42,9 @@ def plotDirectionalFreqRatio(plt, samples, resolution, figstart, figend, labels,
     plt.subplot2grid((nrow, 5), (nrow_now, 0), rowspan=2, colspan=4)
     for i, sample in enumerate(Matrix):
         plt.plot(sample, label=labels[i+1])
-        if (args.dfr_right == True):  plt.title("Right")
-        elif (args.dfr_left == True): plt.title("Left")
-        else: plt.title("Right - Left")
+#        if (args.dfr_right == True):  plt.title("Right")
+#        elif (args.dfr_left == True): plt.title("Left")
+#        else: plt.title("Right - Left")
 
     plt.xlim([s, e])
     pltxticks(s, e, figstart, figend, 10)
@@ -123,7 +123,7 @@ def main():
         plt.figure(figsize=(figsize_x, 6 + len(samples)))
         nrow = nrow_heatmap + nrow_eigen + len(samples)
     else:
-        plt.figure(figsize=(figsize_x, 8))
+        plt.figure(figsize=(figsize_x, 10))
         nrow_feature = int(len(samples)/3)
         nrow = nrow_heatmap + nrow_eigen + nrow_feature + 2
 

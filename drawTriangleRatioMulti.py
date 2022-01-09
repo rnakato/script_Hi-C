@@ -26,6 +26,7 @@ def main():
  #   parser.add_argument("--ysize", help="ysize (* times of samples)", type=int, default=5)
     parser.add_argument("--vmax", help="max value of color bar", type=int, default=1)
     parser.add_argument("--vmin", help="min value of color bar", type=int, default=-1)
+    parser.add_argument("--smooth_median_filter", help="filter width for smoothing", type=int, default=3)
 
     args = parser.parse_args()
 #    print(args)
@@ -57,10 +58,9 @@ def main():
         observed = dir + "/Matrix/intrachromosomal/" + str(resolution) + "/observed."  + type + "." + chr + ".matrix.gz"
         samples.append(JuicerMatrix("RPM", observed, resolution))
 
-    smooth_median_filter = 3
-    EnrichMatrices = make3dmatrixRatio(samples, smooth_median_filter)
+    EnrichMatrices = make3dmatrixRatio(samples, args.smooth_median_filter)
 
-    rowspan_heatmap = 3
+    rowspan_heatmap = 2
     rowspan_barplot = 1
     rowspan = rowspan_heatmap + rowspan_barplot*2
 
